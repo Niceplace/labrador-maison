@@ -1,0 +1,15 @@
+## DYNAMIC CONFIG
+tls:
+   certificates:
+     - certFile: /certs/wildcard.thinkcenter.dev.cert.pem
+       keyFile: /certs/wildcard.thinkcenter.dev.key.pem
+       stores:
+         - default
+   stores:
+     default:
+       defaultCertificate:
+         certFile: /certs/wildcard.thinkcenter.dev.cert.pem
+         keyFile: /certs/wildcard.thinkcenter.dev.key.pem
+   options:
+     default:
+        sniStrict: true
