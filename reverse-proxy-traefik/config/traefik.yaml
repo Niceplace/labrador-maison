@@ -8,9 +8,8 @@ global:
 log:
   level: DEBUG
 
-# enable dashboard on 8080 with NO AUTH
 api:
-  insecure: true
+  #insecure: true
   dashboard: true
 
 # enable ping so the `traefik healthcheck` works

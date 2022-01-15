@@ -4,6 +4,13 @@ services:
   reverse-proxy:
     # The official v2 Traefik docker image
     image: traefik:v2.5
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.proxy-dashboard.rule=Host(`traefik.thinkcenter.dev`) && (PathPrefix(`/api/`) || PathPrefix(`/dashboard/`))"
+      - "traefik.http.routers.proxy-dashboard.service=api@internal"
+      - "traefik.http.routers.proxy-dashboard.tls=true"
+      - "traefik.http.middlewares.proxy-dashboard.ipwhitelist.sourcerange=127.0.0.1/32, 192.168.1.0/24"
+
     ports:
       - "80:80"
       - "443:443"
@@ -14,24 +21,14 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - default
-  whoami:
-    # A container that exposes an API to show its IP address
-    image: traefik/whoami
-    labels:
-      - "traefik.http.routers.whoami.rule=Host(`whoami.thinkcenter.dev`)"
-    networks:
-      - default
-  niceplace1:
-    image: niceplace/node-web-app1
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.niceplace1.rule=Host(`app1.thinkcenter.dev`)"
-      - "traefik.http.routers.niceplace1.entrypoints=websecure"
-      - "traefik.http.routers.niceplace1.tls=true"
-    networks:
-      - default
-
+        #  whoami:
+        #    # A container that exposes an API to show its IP address
+        #    image: traefik/whoami
+        #    labels:
+        #      - "traefik.http.routers.whoami.rule=Host(`whoami.thinkcenter.dev`)"
+        #    networks:
+        #      - default
 networks:
   default:
-    external:
-      name: thinknetwork
+    external: true
+    name: thinknetwork
