@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: concourse_pass
     volumes:
       - type: volume
-        source: pgconcoursedata:
+        source: pgconcoursedata
         target: /var/lib/postgresql/data
     logging:
       driver: "json-file"
@@ -29,6 +29,7 @@ services:
       - "traefik.http.routers.concourse-web.rule=Host(`concourse.thinkcenter.dev`)"
       - "traefik.http.routers.concourse-web.entrypoints=websecure"
       - "traefik.http.routers.concourse-web.tls=true"
+      - "traefik.http.services.concourse-web.loadbalancer.server.port=8080"
     links: 
       - "concourse-db"
     depends_on: 
@@ -72,6 +73,8 @@ services:
       CONCOURSE_TSA_HOST: "concourse-web:2222"
       # enable DNS proxy to support Docker's 127.x.x.x DNS server
       CONCOURSE_GARDEN_DNS_PROXY_ENABLE: "true"
+      # https://github.com/concourse/concourse-docker/issues/74#issuecomment-925058923
+      CONCOURSE_RUNTIME: "containerd"
     logging:
       driver: "json-file"
       options:
@@ -93,6 +96,6 @@ networks:
     name: concourse-internal
 
 volumes:
-  pgdata:
+  pgconcoursedata:
 
 

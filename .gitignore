@@ -1,5 +1,6 @@
 # Folder that holds certificates
 certs/
+concourse-ci/keys/
 
 # Ignore traefik log files
 reverse-proxy-traefik/logs/*.log
