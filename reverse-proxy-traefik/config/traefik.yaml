@@ -5,7 +5,6 @@ log:
   level: INFO
   filePath: "/var/logs/traefik/log-base.log"
 accessLog:
-  level: INFO
   filePath: "/var/logs/traefik/access.log"
 api:
   dashboard: true
