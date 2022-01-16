@@ -1,2 +1,5 @@
 # Folder that holds certificates
 certs/
+
+# Ignore traefik log files
+reverse-proxy-traefik/logs/*.log

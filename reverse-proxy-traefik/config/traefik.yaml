@@ -3,7 +3,8 @@ global:
   checkNewVersion: true
 log:
   level: INFO
-  filePath: "/var/logs/traefik/log-base.log"
+  #Since I am using dozzle for log vieweing, prefer STDOUT for this
+  #filePath: "/var/logs/traefik/log-base.log"
 accessLog:
   filePath: "/var/logs/traefik/access.log"
 api:
