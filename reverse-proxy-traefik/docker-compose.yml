@@ -8,6 +8,12 @@ services:
       - --accesslog.fields.names.StartUTC=drop
     environment:
       - TZ=America/Toronto
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.proxy-dashboard.rule=Host(`traefik.thinkcenter.dev`) && (PathPrefix(`/api/`) || PathPrefix(`/dashboard/`))"
+      - "traefik.http.routers.proxy-dashboard.service=api@internal"
+      - "traefik.http.routers.proxy-dashboard.tls=true"
+      - "traefik.http.middlewares.proxy-dashboard.ipwhitelist.sourcerange=127.0.0.1/32, 192.168.1.0/24"
     ports:
       - "80:80"
       - "443:443"
@@ -24,15 +30,6 @@ services:
     image: traefik/whoami
     labels:
       - "traefik.http.routers.whoami.rule=Host(`whoami.thinkcenter.dev`)"
-    networks:
-      - default
-  niceplace1:
-    image: niceplace/node-web-app1
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.niceplace1.rule=Host(`app1.thinkcenter.dev`)"
-      - "traefik.http.routers.niceplace1.entrypoints=websecure"
-      - "traefik.http.routers.niceplace1.tls=true"
     networks:
       - default
 
