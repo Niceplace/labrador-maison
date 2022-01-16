@@ -4,6 +4,10 @@ services:
   reverse-proxy:
     # The official v2 Traefik docker image
     image: traefik:v2.5
+    command:
+      - --accesslog.fields.names.StartUTC=drop
+    environment:
+      - TZ=America/Toronto
     ports:
       - "80:80"
       - "443:443"
@@ -11,6 +15,7 @@ services:
     volumes:
       - ./config/:/etc/traefik/
       - ./certs/:/certs/
+      - ./logs/:/var/logs/traefik/
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - default

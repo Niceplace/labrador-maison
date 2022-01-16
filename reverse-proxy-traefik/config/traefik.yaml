@@ -1,13 +1,12 @@
 ## STATIC CONFIG (restart traefik to update)
-
-# shows you a log msg if a newer image tag can be used
 global:
   checkNewVersion: true
-
-# log default is ERROR, but WARN is more helpful
 log:
-  level: DEBUG
-
+  level: INFO
+  filePath: "/var/logs/traefik/log-base.log"
+accessLog:
+  level: INFO
+  filePath: "/var/logs/traefik/access.log"
 # enable dashboard on 8080 with NO AUTH
 api:
   insecure: true
