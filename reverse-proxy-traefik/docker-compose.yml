@@ -38,5 +38,5 @@ services:
 
 networks:
   default:
-    external:
-      name: thinknetwork
+    external: true
+    name: thinknetwork

@@ -7,9 +7,7 @@ log:
 accessLog:
   level: INFO
   filePath: "/var/logs/traefik/access.log"
-# enable dashboard on 8080 with NO AUTH
 api:
-  insecure: true
   dashboard: true
 
 # enable ping so the `traefik healthcheck` works
