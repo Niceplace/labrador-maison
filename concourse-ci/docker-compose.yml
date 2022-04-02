@@ -22,14 +22,19 @@ services:
     # https://concourse-ci.org/postgresql-node.html#db-resource-utilization
 
   concourse-web:
-    image: concourse/concourse:7
+    image: concourse/concourse:7.7.0
     command: web
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=thinknetwork"
       - "traefik.http.routers.concourse-web.rule=Host(`concourse.thinkcenter.dev`)"
       - "traefik.http.routers.concourse-web.entrypoints=websecure"
       - "traefik.http.routers.concourse-web.tls=true"
       - "traefik.http.services.concourse-web.loadbalancer.server.port=8080"
+        #      - "traefik.tcp.routers.concourse-web.tls.passthrough=true"
+        #      - "traefik.tcp.routers.concourse-web.rule=HostSNI(`concourse.thinkcenter.dev`)"
+        #      - "traefik.tcp.routers.concourse-web.entrypoints=websecure"
+        #      - "traefik.tcp.services.concourse-web.loadbalancer.server.port=8443"
     links: 
       - "concourse-db"
     depends_on: 
@@ -38,6 +43,7 @@ services:
     #  - "8080:8080"
     volumes:
       - "./keys/web:/concourse-keys"
+      - "./certs:/opt/mtls/certs"
     environment:
       CONCOURSE_EXTERNAL_URL: https://concourse.thinkcenter.dev
       CONCOURSE_POSTGRES_HOST: concourse-db
@@ -46,6 +52,10 @@ services:
       CONCOURSE_POSTGRES_DATABASE: concourse
       CONCOURSE_ADD_LOCAL_USER: niceplace:Passw0rd
       CONCOURSE_MAIN_TEAM_LOCAL_USER: niceplace
+        #      CONCOURSE_TLS_CA_CERT: /opt/mtls/certs/wildcard.thinkcenter.dev.client-cert.pem
+        #      CONCOURSE_TLS_KEY: /opt/mtls/certs/wildcard.thinkcenter.dev.key.pem
+        #      CONCOURSE_TLS_CERT: /opt/mtls/certs/wildcard.thinkcenter.dev.cert.pem
+        #      CONCOURSE_TLS_BIND_PORT: 8443
     logging:
       driver: "json-file"
       options:
@@ -59,7 +69,7 @@ services:
     # https://concourse-ci.org/concourse-web.html#web-resource-utilization
 
   concourse-worker:
-    image: concourse/concourse:7
+    image: concourse/concourse:7.7.0
     command: worker
     stop_signal: SIGUSR2
     privileged: true
@@ -72,7 +82,7 @@ services:
     environment:
       CONCOURSE_TSA_HOST: "concourse-web:2222"
       # enable DNS proxy to support Docker's 127.x.x.x DNS server
-      CONCOURSE_GARDEN_DNS_PROXY_ENABLE: "true"
+      CONCOURSE_CONTAINERD_DNS_PROXY_ENABLE: "true"
       # https://github.com/concourse/concourse-docker/issues/74#issuecomment-925058923
       CONCOURSE_RUNTIME: "containerd"
     logging:
