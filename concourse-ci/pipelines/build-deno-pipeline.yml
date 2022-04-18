@@ -1,0 +1,72 @@
+---
+resource_types:
+- name: cogito
+  type: registry-image
+  check_every: 1h
+  source:
+    repository: pix4d/cogito
+
+resources:
+  - name: gh-status
+    type: cogito
+    check_every: 1h
+    source:
+      owner: Niceplace
+      repo: dashbits
+      access_token: ((github.accesstoken))
+  - name: github-repo-app
+    type: git
+    source:
+      uri: https://github.com/Niceplace/dashbits.git
+      username: ((github.accesstoken))
+      password: x-oauth-basic
+      branch: ((branch))      
+  - name: github-repo-ci
+    type: git
+    source:
+      uri: https://github.com/Niceplace/labrador-maison
+      username: ((github.accesstoken))
+      password: x-oauth-basic
+      branch: ((branch))
+
+jobs:
+  - name: deno-check
+    on_success:
+      put: gh-status
+      inputs: [github-repo-app]
+      params: {state: success}
+    on_failure:
+      put: gh-status
+      inputs: [github-repo-app]
+      params: {state: failure}        
+    on_error:
+      put: gh-status
+      inputs: [github-repo-app]
+      params: {state: error}
+    plan:
+      - in_parallel:
+        - get: github-repo-app
+          resource: app
+        - get: github-ci-app
+          resource: ci
+      - put: gh-status
+        inputs: [app]
+        params: {state: pending}
+      - task: deno-format-check-and-lint
+        file: ci/concourse-ci/tasks/deno-task.yml
+        inputs:
+          - name: app
+        vars:
+          deno_run_args: ["fmt", "--check"]
+      - task: deno-unit-tests
+        file: ci/concourse-ci/tasks/deno-task.yml
+        inputs:
+          - name: app
+        vars:
+          deno_run_args: ["test", "app/backend/*.test.unit.ts"]
+      - task: deno-integration-tests
+        file: ci/concourse-ci/tasks/deno-task.yml
+        inputs:
+          - name: app
+        vars:
+          deno_run_args: ["test", "app/backend/*.test.integration.ts"]
