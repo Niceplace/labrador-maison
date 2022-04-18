@@ -11,4 +11,4 @@ run:
   path: /bin/bash
   args: 
     - -c
-    - deno ((deno_run_args))
+    - deno ((deno_command_and_args))
