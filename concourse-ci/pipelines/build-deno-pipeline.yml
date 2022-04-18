@@ -62,7 +62,11 @@ jobs:
         file: ci/concourse-ci/tasks/deno-task.yml
         vars:
           deno_command_and_args: "test app/backend/*.test.unit.ts"
+        input_mapping:
+          app: app
       - task: deno-integration-tests
         file: ci/concourse-ci/tasks/deno-task.yml
         vars:            
           deno_command_and_args: "test app/backend/*.test.integration.ts"
+        input_mapping:
+          app: app
