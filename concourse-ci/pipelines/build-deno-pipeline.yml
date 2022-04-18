@@ -55,12 +55,12 @@ jobs:
       - task: deno-format-check-and-lint
         file: ci/concourse-ci/tasks/deno-task.yml
         vars: 
-          deno_run_args: "fmt --check"
+          deno_command_and_args: "fmt --check"
       - task: deno-unit-tests
         file: ci/concourse-ci/tasks/deno-task.yml
         vars:
-          deno_run_args: "test app/backend/*.test.unit.ts"
+          deno_command_and_args: "test app/backend/*.test.unit.ts"
       - task: deno-integration-tests
         file: ci/concourse-ci/tasks/deno-task.yml
-        vars:
-          deno_run_args: "test app/backend/*.test.integration.ts"
+        vars:            
+          deno_command_and_args: "test app/backend/*.test.integration.ts"

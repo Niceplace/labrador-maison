@@ -8,6 +8,7 @@ image_resource:
     tag: debian-1.20.6
 
 run:
-  path: /usr/bin/deno
+  path: /bin/bash
   args: 
-    - ((deno_run_args))
+    - -c
+    - deno ((deno_run_args))
