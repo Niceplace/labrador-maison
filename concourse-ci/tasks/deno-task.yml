@@ -9,4 +9,5 @@ image_resource:
 
 run:
   path: /usr/bin/deno
-  args: ((deno_run_args))
+  args: 
+    - ((deno_run_args))
