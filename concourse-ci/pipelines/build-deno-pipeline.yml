@@ -20,14 +20,14 @@ resources:
       uri: https://github.com/Niceplace/dashbits.git
       username: ((github.accesstoken))
       password: x-oauth-basic
-      branch: ((branch))      
+      branch: ((branch_app))      
   - name: github-repo-ci
     type: git
     source:
       uri: https://github.com/Niceplace/labrador-maison
       username: ((github.accesstoken))
       password: x-oauth-basic
-      branch: ((branch))
+      branch: ((branch_ci))
 
 jobs:
   - name: deno-check
