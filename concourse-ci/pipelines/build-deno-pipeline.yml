@@ -45,10 +45,10 @@ jobs:
       params: {state: error}
     plan:
       - in_parallel:
-        - get: github-repo-app
-          resource: app
-        - get: github-ci-app
-          resource: ci
+        - get: app
+          resource: github-repo-app
+        - get: ci
+          resource: github-repo-ci
       - put: gh-status
         inputs: [app]
         params: {state: pending}
