@@ -70,3 +70,7 @@ jobs:
           deno_command_and_args: "test app/backend/*.test.integration.ts"
         input_mapping:
           app: app
+      - task: deno-build-docker
+        file: ci/concourse-ci/tasks/build-docker-task.yml
+        input_mapping:
+          app-source: app

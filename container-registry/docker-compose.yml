@@ -1,0 +1,22 @@
+version: "3"
+services:
+  dozzle:
+    container_name: registry
+    image: registry:2.8
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.registry.rule=Host(`registry.thinkcenter.dev`)"
+      - "traefik.http.routers.registry.entrypoints=websecure"
+      - "traefik.http.routers.registry.tls=true"
+      - "traefik.http.services.concourse-web.loadbalancer.server.port=5000"
+    networks:
+      - default
+    environment:
+      REGISTRY_HTTP_HOST: "https://registry.thinkcenter.dev"
+
+networks:
+  default:
+    external: true
+    name: thinknetwork
