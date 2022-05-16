@@ -17,9 +17,9 @@ services:
       - default
     environment:
       REGISTRY_LOG_LEVEL: "debug"
-      REGISTRY_HTTP_ADDR: "localhost:5000"
+      REGISTRY_HTTP_ADDR: "0.0.0.0:5000"
       REGISTRY_HTTP_HOST: "https://registry.thinkcenter.dev"
-      REGISTRY_HTTP_DEBUG_ADDR: "localhost:5001"
+      REGISTRY_HTTP_DEBUG_ADDR: "0.0.0.0:5001"
 
 networks:
   default:
