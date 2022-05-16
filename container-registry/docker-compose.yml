@@ -1,16 +1,16 @@
 version: "3"
 services:
-  registry:
+  container-registry:
     container_name: registry
     image: registry:2.8
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.registry.rule=Host(`registry.thinkcenter.dev`)"
-      - "traefik.http.routers.registry.entrypoints=websecure"
-      - "traefik.http.routers.registry.tls=true"
-      - "traefik.http.services.registry.loadbalancer.server.port=5000"
+      - "traefik.http.routers.container-registry.rule=Host(`registry.thinkcenter.dev`)"
+      - "traefik.http.routers.container-registry.entrypoints=websecure"
+      - "traefik.http.routers.container-registry.tls=true"
+      - "traefik.http.services.container-registry.loadbalancer.server.port=5000"
     networks:
       - default
     environment:
