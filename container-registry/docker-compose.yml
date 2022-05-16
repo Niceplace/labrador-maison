@@ -3,6 +3,10 @@ services:
   container-registry:
     container_name: registry
     image: registry:2.8
+    environment:
+      - "REGISTRY_LOG_LEVEL=debug"
+      - "REGISTRY_HTTP_ADDR=0.0.0.0:5000"
+      - "REGISTRY_HTTP_HOST=https://registry.thinkcenter.dev"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     labels:
@@ -11,15 +15,9 @@ services:
       - "traefik.http.routers.container-registry.entrypoints=websecure"
       - "traefik.http.routers.container-registry.tls=true"
       - "traefik.http.services.container-registry.loadbalancer.server.port=5000"
-    ports: 
-      - "5001:5001"
     networks:
       - default
-    environment:
-      REGISTRY_LOG_LEVEL: "debug"
-      REGISTRY_HTTP_ADDR: "0.0.0.0:5000"
-      REGISTRY_HTTP_HOST: "https://registry.thinkcenter.dev"
-      REGISTRY_HTTP_DEBUG_ADDR: "0.0.0.0:5001"
+    
 
 networks:
   default:
