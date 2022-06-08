@@ -12,7 +12,7 @@ resources:
     check_every: 1h
     source:
       owner: Niceplace
-      repo: dashbits
+      repo: dashbitsj
       access_token: ((github.accesstoken))
   - name: github-repo-app
     type: git
@@ -20,7 +20,8 @@ resources:
       uri: https://github.com/Niceplace/dashbits.git
       username: ((github.accesstoken))
       password: x-oauth-basic
-      branch: ((branch_app))      
+      branch: ((branch_app))
+      fetch_tags: false
   - name: github-repo-ci
     type: git
     source:
@@ -28,6 +29,11 @@ resources:
       username: ((github.accesstoken))
       password: x-oauth-basic
       branch: ((branch_ci))
+  - name: deno-app-docker-image
+    type: registry-image
+    icon: docker
+    source:
+      repository: registry.thinkcenter.dev/dashbits-backend
 
 jobs:
   - name: deno-check
@@ -74,3 +80,12 @@ jobs:
         file: ci/concourse-ci/tasks/build-docker-task.yml
         input_mapping:
           app-source: app
+        output-mapping:
+          app-image: docker-image-fresh-build
+      - put: deno-app-docker-image
+        params: {image: docker-image-fresh-build/image.tar, version: github-repo-app/.git/short_ref}
+      #- task: deno-deploy-docker
+      #  file: ci/concourse-ci/tasks/deploy-docker-task.yml
+      #  input_mapping:
+      #    image-name: app
+      #    image-version: test
