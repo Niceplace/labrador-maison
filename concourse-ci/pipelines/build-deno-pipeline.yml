@@ -1,19 +1,19 @@
 ---
-resource_types:
-- name: cogito
-  type: registry-image
-  check_every: 1h
-  source:
-    repository: pix4d/cogito
+# resource_types:
+# - name: cogito
+#   type: registry-image
+#   check_every: 1h
+#   source:
+#     repository: pix4d/cogito
 
 resources:
-  - name: gh-status
-    type: cogito
-    check_every: 1h
-    source:
-      owner: Niceplace
-      repo: dashbitsj
-      access_token: ((github.accesstoken))
+  # - name: gh-status
+  #   type: cogito
+  #   check_every: 1h
+  #   source:
+  #     owner: Niceplace
+  #     repo: dashbits
+  #     access_token: ((github.accesstoken))
   - name: github-repo-app
     type: git
     source:
@@ -33,31 +33,33 @@ resources:
     type: registry-image
     icon: docker
     source:
-      repository: registry.thinkcenter.dev/dashbits-backend
+      repository: registry.thinkcenter.dev/dashbits-backend #https://github.com/concourse/registry-image-resource/issues/10#issuecomment-477570948
+      ca_certs:
+        - ((registry.certificate))
 
 jobs:
   - name: deno-check
-    on_success:
-      put: gh-status
-      inputs: [github-repo-app]
-      params: {state: success}
-    on_failure:
-      put: gh-status
-      inputs: [github-repo-app]
-      params: {state: failure}        
-    on_error:
-      put: gh-status
-      inputs: [github-repo-app]
-      params: {state: error}
+    # on_success:
+    #   put: gh-status
+    #   inputs: [github-repo-app]
+    #   params: {state: success}
+    # on_failure:
+    #   put: gh-status
+    #   inputs: [github-repo-app]
+    #   params: {state: failure}        
+    # on_error:
+    #   put: gh-status
+    #   inputs: [github-repo-app]
+    #   params: {state: error}
     plan:
       - in_parallel:
         - get: app
           resource: github-repo-app
         - get: ci
           resource: github-repo-ci
-      - put: gh-status
-        inputs: [app]
-        params: {state: pending}
+      # - put: gh-status
+      #   inputs: [app]
+      #   params: {state: pending}
       - task: deno-format-check-and-lint
         file: ci/concourse-ci/tasks/deno-task.yml
         vars: 
@@ -79,8 +81,8 @@ jobs:
       - task: deno-build-docker
         file: ci/concourse-ci/tasks/build-docker-task.yml
         input_mapping:
-          app-source: app
-        output-mapping:
+          app-source: app/backend
+        output_mapping:
           app-image: docker-image-fresh-build
       - put: deno-app-docker-image
         params: {image: docker-image-fresh-build/image.tar, version: github-repo-app/.git/short_ref}
