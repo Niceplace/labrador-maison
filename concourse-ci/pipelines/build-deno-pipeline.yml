@@ -36,6 +36,7 @@ resources:
       repository: registry.thinkcenter.dev/dashbits-backend #https://github.com/concourse/registry-image-resource/issues/10#issuecomment-477570948
       ca_certs:
         - ((registry.certificate))
+      tag: "latest"
 
 jobs:
   - name: deno-check
@@ -79,15 +80,21 @@ jobs:
         input_mapping:
           app: app
       - task: deno-build-docker
+        privileged: true
         file: ci/concourse-ci/tasks/build-docker-task.yml
         input_mapping:
           app-source: app
         output_mapping:
-          app-image: docker-image-fresh-build
+          image: docker-image-fresh-build
         vars:            
           build_docker_task_dockerfile_dir_path: "backend"
       - put: deno-app-docker-image
-        params: {image: docker-image-fresh-build/image.tar, version: github-repo-app/.git/short_ref}
+        inputs:
+          - docker-image-fresh-build
+          - app
+        params: 
+          image: docker-image-fresh-build/image.tar
+          additional_tags: app/.git/HEAD
       #- task: deno-deploy-docker
       #  file: ci/concourse-ci/tasks/deploy-docker-task.yml
       #  input_mapping:

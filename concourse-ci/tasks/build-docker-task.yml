@@ -11,7 +11,7 @@ inputs:
   - name: app-source
 
 outputs:
-  - name: app-image
+  - name: image
 
 params: 
   CONTEXT: app-source/((build_docker_task_dockerfile_dir_path))
