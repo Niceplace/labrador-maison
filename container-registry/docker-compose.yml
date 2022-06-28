@@ -7,6 +7,7 @@ services:
       - "REGISTRY_LOG_LEVEL=debug"
       - "REGISTRY_HTTP_ADDR=0.0.0.0:5000"
       - "REGISTRY_HTTP_HOST=https://registry.thinkcenter.dev"
+      - "REGISTRY_HTTP_HEADERS_Access-Control-Allow-Origin=['*']"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     labels:
@@ -17,7 +18,22 @@ services:
       - "traefik.http.services.container-registry.loadbalancer.server.port=5000"
     networks:
       - default
-    
+  container-registry-ui:
+    image: joxit/docker-registry-ui:2.2.1-debian
+    environment:
+      - "NGINX_PROXY_PASS_URL=http://registry:5000" # Nginx can directly talk to the container, config that is not NGINX should be assumed to act client side
+      - "REGISTRY_TITLE=Thinkcenter docker registry"
+      - "DELETE_IMAGES=true"
+      - "SHOW_CONTENT_DIGEST=true"
+      - "SINGLE_REGISTRY=true"
+    depends_on: ['container-registry']
+    networks:
+      - default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.container-registry-ui.rule=Host(`registry-ui.thinkcenter.dev`)"
+      - "traefik.http.routers.container-registry-ui.entrypoints=websecure"
+      - "traefik.http.routers.container-registry-ui.tls=true"
 
 networks:
   default:
