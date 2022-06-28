@@ -63,19 +63,19 @@ jobs:
       - task: deno-format-check-and-lint
         file: ci/concourse-ci/tasks/deno-task.yml
         vars: 
-          deno_command_and_args: "fmt --check app/backend/"
+          deno_command_and_args: "deno fmt --check app/backend/"
         input_mapping:
           app: app
       - task: deno-unit-tests
         file: ci/concourse-ci/tasks/deno-task.yml
         vars:
-          deno_command_and_args: "test app/backend/*.test.unit.ts"
+          deno_command_and_args: "deno test app/backend/*.test.unit.ts"
         input_mapping:
           app: app
       - task: deno-integration-tests
         file: ci/concourse-ci/tasks/deno-task.yml
         vars:            
-          deno_command_and_args: "test app/backend/*.test.integration.ts"
+          deno_command_and_args: "deno test --allow-read --allow-env app/backend/*.test.integration.ts"
         input_mapping:
           app: app
       - task: deno-build-docker

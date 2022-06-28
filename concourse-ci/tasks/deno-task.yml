@@ -14,4 +14,4 @@ run:
   path: /bin/bash
   args: 
     - -c
-    - deno --allow-read ((deno_command_and_args))
+    - ((deno_command_and_args))
