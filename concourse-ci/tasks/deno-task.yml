@@ -14,4 +14,4 @@ run:
   path: /bin/bash
   args: 
     - -c
-    - ((deno_command_and_args))
+    - ((deno_task_command_and_args))

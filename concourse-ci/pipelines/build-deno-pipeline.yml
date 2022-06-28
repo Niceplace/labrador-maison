@@ -69,21 +69,23 @@ jobs:
       - task: deno-unit-tests
         file: ci/concourse-ci/tasks/deno-task.yml
         vars:
-          deno_command_and_args: "deno test app/backend/*.test.unit.ts"
+          deno_task_command_and_args: "deno test app/backend/*.test.unit.ts"
         input_mapping:
           app: app
       - task: deno-integration-tests
         file: ci/concourse-ci/tasks/deno-task.yml
         vars:            
-          deno_command_and_args: "deno test --allow-read --allow-env app/backend/*.test.integration.ts"
+          deno_task_command_and_args: "deno test --allow-read --allow-env app/backend/*.test.integration.ts"
         input_mapping:
           app: app
       - task: deno-build-docker
         file: ci/concourse-ci/tasks/build-docker-task.yml
         input_mapping:
-          app-source: app/backend
+          app-source: app
         output_mapping:
           app-image: docker-image-fresh-build
+        vars:            
+          build_docker_task_dockerfile_dir_path: "backend"
       - put: deno-app-docker-image
         params: {image: docker-image-fresh-build/image.tar, version: github-repo-app/.git/short_ref}
       #- task: deno-deploy-docker
