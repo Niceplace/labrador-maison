@@ -4,3 +4,6 @@ concourse-ci/keys/
 
 # Ignore traefik log files
 reverse-proxy-traefik/logs/*.log
+
+# Ignore pipeline helper scripts since they might contain secrets
+concourse-ci/scripts/

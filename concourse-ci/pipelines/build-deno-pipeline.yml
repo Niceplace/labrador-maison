@@ -1,0 +1,102 @@
+---
+# resource_types:
+# - name: cogito
+#   type: registry-image
+#   check_every: 1h
+#   source:
+#     repository: pix4d/cogito
+
+resources:
+  # - name: gh-status
+  #   type: cogito
+  #   check_every: 1h
+  #   source:
+  #     owner: Niceplace
+  #     repo: dashbits
+  #     access_token: ((github.accesstoken))
+  - name: github-repo-app
+    type: git
+    source:
+      uri: https://github.com/Niceplace/dashbits.git
+      username: ((github.accesstoken))
+      password: x-oauth-basic
+      branch: ((branch_app))
+      fetch_tags: false
+  - name: github-repo-ci
+    type: git
+    source:
+      uri: https://github.com/Niceplace/labrador-maison
+      username: ((github.accesstoken))
+      password: x-oauth-basic
+      branch: ((branch_ci))
+  - name: deno-app-docker-image
+    type: registry-image
+    icon: docker
+    source:
+      repository: registry.thinkcenter.dev/dashbits-backend #https://github.com/concourse/registry-image-resource/issues/10#issuecomment-477570948
+      ca_certs:
+        - ((registry.certificate))
+      tag: "latest"
+
+jobs:
+  - name: deno-check
+    # on_success:
+    #   put: gh-status
+    #   inputs: [github-repo-app]
+    #   params: {state: success}
+    # on_failure:
+    #   put: gh-status
+    #   inputs: [github-repo-app]
+    #   params: {state: failure}        
+    # on_error:
+    #   put: gh-status
+    #   inputs: [github-repo-app]
+    #   params: {state: error}
+    plan:
+      - in_parallel:
+        - get: app
+          resource: github-repo-app
+        - get: ci
+          resource: github-repo-ci
+      # - put: gh-status
+      #   inputs: [app]
+      #   params: {state: pending}
+      - task: deno-format-check-and-lint
+        file: ci/concourse-ci/tasks/deno-task.yml
+        vars: 
+          deno_task_command_and_args: "deno fmt --check app/backend/"
+        input_mapping:
+          app: app
+      - task: deno-unit-tests
+        file: ci/concourse-ci/tasks/deno-task.yml
+        vars:
+          deno_task_command_and_args: "deno test app/backend/*.test.unit.ts"
+        input_mapping:
+          app: app
+      - task: deno-integration-tests
+        file: ci/concourse-ci/tasks/deno-task.yml
+        vars:            
+          deno_task_command_and_args: "deno test --allow-read --allow-env app/backend/*.test.integration.ts"
+        input_mapping:
+          app: app
+      - task: deno-build-docker
+        privileged: true
+        file: ci/concourse-ci/tasks/build-docker-task.yml
+        input_mapping:
+          app-source: app
+        output_mapping:
+          image: docker-image-fresh-build
+        vars:            
+          build_docker_task_dockerfile_dir_path: "backend"
+      - put: deno-app-docker-image
+        inputs:
+          - docker-image-fresh-build
+          - app
+        params: 
+          image: docker-image-fresh-build/image.tar
+          additional_tags: app/.git/HEAD
+      #- task: deno-deploy-docker
+      #  file: ci/concourse-ci/tasks/deploy-docker-task.yml
+      #  input_mapping:
+      #    image-name: app
+      #    image-version: test
