@@ -17,14 +17,28 @@ run:
   path: sh
   args: 
     - -c
-    - |        
-    COMMMIT_MESSAGE=$(cd repo && git log -1 --format=%B)
-    case "${COMMMIT_MESSAGE}" in 
-      fix/*) NEW_VERSION=$(npx semver -i patch ((current_version)) )
-      feat/*) NEW_VERSION=$(npx semver -i minor ((current_version)) )
-      breaking/*) NEW_VERSION=$(npx semver -i major ((current_version)) )
-      *) NEW_VERSION=$(npx semver -i patch ((current_version)) )    
-    esac
-    echo "${NEW_VERSION}" > version
-
-    
+    - | 
+      apt-get -qq update && apt-get -q install git -y        
+      export COMMIT_MESSAGE=$(cd repo && git log -1 --format=%B)
+      echo "Commit message is ${COMMIT_MESSAGE}"
+      echo "Current version is ((current_version))"      
+      case "${COMMIT_MESSAGE}" in 
+        fix/* ) 
+          NEW_VERSION=$(npx --yes semver -i patch ((current_version)) )
+          echo "Based on commit message, version gets a patch update. ((current_version)) -> ${NEW_VERSION}"
+          ;;
+        feat/* ) 
+          NEW_VERSION=$(npx --yes semver -i minor ((current_version)) )
+          echo "Based on commit message, version gets a minor update. ((current_version)) -> ${NEW_VERSION}"
+          ;;
+        breaking/* ) 
+          NEW_VERSION=$(npx --yes semver -i major ((current_version)) )
+          echo "Based on commit message, version gets a major update. ((current_version)) -> ${NEW_VERSION}"
+          ;;
+        *) 
+          NEW_VERSION=$(npx --yes semver -i patch ((current_version)) )
+          echo "No relevant keyword found in commit, defaulting to patch update. ((current_version)) -> ${NEW_VERSION}"
+          ;;          
+      esac
+      echo "Writing new version to output file"
+      echo "${NEW_VERSION}" > version/new_version

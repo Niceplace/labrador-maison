@@ -105,7 +105,7 @@ jobs:
         params: 
           image: docker-image-fresh-build/image.tar
           additional_tags: app/.git/HEAD
-          version: new_app_version
+          version: new_app_version/new_version
       # Update the version in the file, push the changes & add changelog ?
       #- task: deno-deploy-docker
       #  file: ci/concourse-ci/tasks/deploy-docker-task.yml
