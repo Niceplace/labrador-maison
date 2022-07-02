@@ -1,0 +1,30 @@
+---
+platform: linux
+
+image_resource:
+  type: registry-image
+  source: 
+    repository: node
+    tag: 18-slim
+
+inputs:
+  - name: repo
+
+outputs:
+  - name: version
+
+run:
+  path: sh
+  args: 
+    - -c
+    - |        
+    COMMMIT_MESSAGE=$(cd repo && git log -1 --format=%B)
+    case "${COMMMIT_MESSAGE}" in 
+      fix/*) NEW_VERSION=$(npx semver -i patch ((current_version)) )
+      feat/*) NEW_VERSION=$(npx semver -i minor ((current_version)) )
+      breaking/*) NEW_VERSION=$(npx semver -i major ((current_version)) )
+      *) NEW_VERSION=$(npx semver -i patch ((current_version)) )    
+    esac
+    echo "${NEW_VERSION}" > version
+
+    

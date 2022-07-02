@@ -15,6 +15,7 @@ outputs:
 
 params: 
   CONTEXT: app-source/((build_docker_task_dockerfile_dir_path))
+  BUILD_ARG_BACKEND_APP_VERSION: app-source/.git/HEAD
 
 run:
   path: build
