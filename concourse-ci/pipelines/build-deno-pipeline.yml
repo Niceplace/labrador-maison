@@ -62,7 +62,7 @@ jobs:
       #   inputs: [app]
       #   params: {state: pending}
       - load_var: app_version
-        file: app/version.json
+        file: app/backend/version.json
       - task: deno-format-check-and-lint
         file: ci/concourse-ci/tasks/deno-task.yml
         vars: 
