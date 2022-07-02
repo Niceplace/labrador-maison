@@ -94,18 +94,19 @@ jobs:
         file: ci/concourse-ci/tasks/version-calculator-task.yml
         input_mapping:
           repo: app
-        output_mapping:
-          version: new_app_version
         vars:
           current_version: ((.:app_version.version_number))
+      - load_var: new_version
+        file: version/new_version # output from bump-version task
       - put: deno-app-docker-image
         inputs:
           - docker-image-fresh-build
-          - app
+          - app          
         params: 
           image: docker-image-fresh-build/image.tar
           additional_tags: app/.git/HEAD
-          version: new_app_version/new_version
+          version: ((.:new_version))
+          bump_aliases: true
       # Update the version in the file, push the changes & add changelog ?
       #- task: deno-deploy-docker
       #  file: ci/concourse-ci/tasks/deploy-docker-task.yml
