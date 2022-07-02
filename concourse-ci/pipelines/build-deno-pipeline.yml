@@ -95,8 +95,9 @@ jobs:
         input_mapping:
           repo: app
         output_mapping:
-          version: new_app_version        
-        
+          version: new_app_version
+        vars:
+          current_version: ((.:version.version_number))
       - put: deno-app-docker-image
         inputs:
           - docker-image-fresh-build
