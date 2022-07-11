@@ -4,15 +4,21 @@ platform: linux
 image_resource:
   type: registry-image
   source:
-    repository: concourse/oci-build-task
+    repository: docker/docker
 
 inputs:
-  - name: source-code
-    path: .
-
-outputs:
   - name: image
   
 run:
-  path: build
+  path: sh
+  args: 
+    - -c
+    - | 
+      echo "Listing docker context"
+      docker context ls
+      echo "Listing currently running containers"
+      docker ps -a
+      echo "About to replace ((old_version)) with ((new_version))"
+
+
   

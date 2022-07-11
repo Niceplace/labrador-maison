@@ -108,8 +108,11 @@ jobs:
           version: ((.:new_version))
           bump_aliases: true
       # Update the version in the file, push the changes & add changelog ?
-      #- task: deno-deploy-docker
-      #  file: ci/concourse-ci/tasks/deploy-docker-task.yml
-      #  input_mapping:
-      #    image-name: app
-      #    image-version: test
+      - task: deno-deploy-docker
+        privileged: true
+        file: ci/concourse-ci/tasks/deploy-docker-task.yml
+        input_mapping:
+          image: docker-image-fresh-build
+        vars:
+          old_version: ((.:app_version.version_number))
+          new_version: ((.:new_version))
