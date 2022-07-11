@@ -115,4 +115,4 @@ jobs:
           image: docker-image-fresh-build
         vars:
           old_version: ((.:app_version.version_number))
-          new_version: ((.:new_version))
+          new_version: ((.:app_version.version_number))
