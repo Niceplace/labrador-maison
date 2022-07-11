@@ -7,6 +7,8 @@ image_resource:
     repository: node
     tag: 18-slim
 
+caches:
+  - 
 inputs:
   - name: repo
 
@@ -20,6 +22,8 @@ run:
     - | 
       apt-get -qq update && apt-get -q install git -y        
       export COMMIT_MESSAGE=$(cd repo && git log -1 --format=%B)
+      echo "Current working directory is"
+      pwd
       echo "Commit message is ${COMMIT_MESSAGE}"
       echo "Current version is ((current_version))"      
       case "${COMMIT_MESSAGE}" in 
