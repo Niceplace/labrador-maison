@@ -15,7 +15,8 @@ run:
     - -c
     - | 
       echo "Listing docker context"
-      docker context ls
+      docker context create remote-thinkcenter --docker "host:tcp://thinkcenter.dev:2375"<
+      docker context use remote-thinkcenter
       echo "Listing currently running containers"
       docker ps -a
       echo "About to replace ((old_version)) with ((new_version))"

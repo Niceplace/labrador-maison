@@ -63,24 +63,24 @@ jobs:
       #   params: {state: pending}
       - load_var: app_version
         file: app/backend/version.json
-      - task: deno-format-check-and-lint
-        file: ci/concourse-ci/tasks/deno-task.yml
-        vars: 
-          deno_task_command_and_args: "deno fmt --check app/backend/"
-        input_mapping:
-          app: app
-      - task: deno-unit-tests
-        file: ci/concourse-ci/tasks/deno-task.yml
-        vars:
-          deno_task_command_and_args: "deno test app/backend/*.test.unit.ts"
-        input_mapping:
-          app: app
-      - task: deno-integration-tests
-        file: ci/concourse-ci/tasks/deno-task.yml
-        vars:            
-          deno_task_command_and_args: "deno test --allow-read --allow-env app/backend/*.test.integration.ts"
-        input_mapping:
-          app: app
+      # - task: deno-format-check-and-lint
+      #   file: ci/concourse-ci/tasks/deno-task.yml
+      #   vars: 
+      #     deno_task_command_and_args: "deno fmt --check app/backend/"
+      #   input_mapping:
+      #     app: app
+      # - task: deno-unit-tests
+      #   file: ci/concourse-ci/tasks/deno-task.yml
+      #   vars:
+      #     deno_task_command_and_args: "deno test app/backend/*.test.unit.ts"
+      #   input_mapping:
+      #     app: app
+      # - task: deno-integration-tests
+      #   file: ci/concourse-ci/tasks/deno-task.yml
+      #   vars:            
+      #     deno_task_command_and_args: "deno test --allow-read --allow-env app/backend/*.test.integration.ts"
+      #   input_mapping:
+      #     app: app
       - task: deno-build-docker
         privileged: true
         file: ci/concourse-ci/tasks/build-docker-task.yml
@@ -90,23 +90,23 @@ jobs:
           image: docker-image-fresh-build
         vars:            
           build_docker_task_dockerfile_dir_path: "backend"
-      - task: bump-version
-        file: ci/concourse-ci/tasks/version-calculator-task.yml
-        input_mapping:
-          repo: app
-        vars:
-          current_version: ((.:app_version.version_number))
-      - load_var: new_version
-        file: version/new_version # output from bump-version task
-      - put: deno-app-docker-image
-        inputs:
-          - docker-image-fresh-build
-          - app          
-        params: 
-          image: docker-image-fresh-build/image.tar
-          additional_tags: app/.git/HEAD
-          version: ((.:new_version))
-          bump_aliases: true
+      # - task: bump-version
+      #   file: ci/concourse-ci/tasks/version-calculator-task.yml
+      #   input_mapping:
+      #     repo: app
+      #   vars:
+      #     current_version: ((.:app_version.version_number))
+      # - load_var: new_version
+      #   file: version/new_version # output from bump-version task
+      # - put: deno-app-docker-image
+      #   inputs:
+      #     - docker-image-fresh-build
+      #     - app          
+      #   params: 
+      #     image: docker-image-fresh-build/image.tar
+      #     additional_tags: app/.git/HEAD
+      #     version: ((.:new_version))
+      #     bump_aliases: true
       # Update the version in the file, push the changes & add changelog ?
       - task: deno-deploy-docker
         privileged: true
