@@ -13,9 +13,10 @@ run:
   path: sh
   args: 
     - -c
-    - | 
+    - |
+      cat ((thinkcenter-ssh-key)) > $HOME/.ssh/thinkcenter_rsa
       echo "Listing docker context"
-      docker context create remote-thinkcenter --docker "host=tcp://thinkcenter.dev:2375"
+      docker context create remote-thinkcenter --docker "host=ssh://admin@thinkcenter.dev,key=$HOME/.ssh/thinkcenter_rsa"
       docker context use remote-thinkcenter
       echo "Listing currently running containers"
       docker ps -a
