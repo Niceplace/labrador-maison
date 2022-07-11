@@ -114,5 +114,6 @@ jobs:
         input_mapping:
           image: docker-image-fresh-build
         vars:
+          thinkcenter-ssh-key: ((thinkcenter-ssh-key))
           old_version: ((.:app_version.version_number))
           new_version: ((.:app_version.version_number))
