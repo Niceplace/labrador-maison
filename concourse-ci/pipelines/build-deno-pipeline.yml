@@ -29,14 +29,14 @@ resources:
       username: ((github.accesstoken))
       password: x-oauth-basic
       branch: ((branch_ci))
-  - name: deno-app-docker-image
-    type: registry-image
-    icon: docker
-    source:
-      repository: registry.thinkcenter.dev/dashbits-backend #https://github.com/concourse/registry-image-resource/issues/10#issuecomment-477570948
-      ca_certs:
-        - ((registry.certificate))
-      tag: "latest"
+  # - name: deno-app-docker-image
+  #   type: registry-image
+  #   icon: docker
+  #   source:
+  #     repository: registry.thinkcenter.dev/dashbits-backend #https://github.com/concourse/registry-image-resource/issues/10#issuecomment-477570948
+  #     ca_certs:
+  #       - ((registry.certificate))
+  #     tag: "latest"
 
 jobs:
   - name: deno-check
