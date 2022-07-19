@@ -114,6 +114,8 @@ jobs:
         input_mapping:
           image: docker-image-fresh-build
         vars:
-          thinkcenter-ssh-key: ((thinkcenter-ssh-key))
+          thinkcenter-ssh-config: ((thinkcenter-ssh-config))
+          thinkcenter-ssh-private: ((thinkcenter-ssh-private))
+          thinkcenter-ssh-public: ((thinkcenter-ssh-public))
           old_version: ((.:app_version.version_number))
           new_version: ((.:app_version.version_number))
