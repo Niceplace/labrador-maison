@@ -3,6 +3,7 @@ services:
   dozzle:
     container_name: dozzle
     image: amir20/dozzle:v3.10.1
+    restart: unless-stopped
     environment:
       - "DOZZLE_NO_ANALYTICS=true"
     volumes:

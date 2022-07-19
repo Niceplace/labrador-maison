@@ -3,6 +3,7 @@ version: '3'
 services:
   concourse-db:
     image: postgres:14-bullseye
+    restart: unless-stopped
     environment:
       POSTGRES_DB: concourse
       POSTGRES_USER: concourse_user
@@ -23,6 +24,7 @@ services:
 
   concourse-web:
     image: concourse/concourse:7.7.0
+    restart: unless-stopped
     command: web
     labels:
       - "traefik.enable=true"
@@ -70,6 +72,7 @@ services:
 
   concourse-worker:
     image: concourse/concourse:7.7.0
+    restart: unless-stopped
     command: worker
     stop_signal: SIGUSR2
     privileged: true
@@ -107,5 +110,3 @@ networks:
 
 volumes:
   pgconcoursedata:
-
-
