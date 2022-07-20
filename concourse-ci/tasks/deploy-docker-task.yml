@@ -18,17 +18,17 @@ run:
       echo "((thinkcenter_ssh_config))" > $HOME/.ssh/config
       echo "((thinkcenter_ssh_private))" > $HOME/.ssh/thinkcenter_rsa
       echo "((thinkcenter_ssh_public))" > $HOME/.ssh/thinkcenter_rsa.pub
+      echo "Setting permissions for SSH keys and directories"
       chmod -R 700 $HOME/.ssh
       chmod 600 $HOME/.ssh/thinkcenter_rsa
       chmod 644 $HOME/.ssh/thinkcenter_rsa.pub
+      echo "Adding our SSH key to the agent to communicate with thinkcenter"
       ssh-agent /bin/bash
       ssh-add $HOME/.ssh/thinkcenter_rsa
-      ssh-keyscan thinkcenter.dev > $HOME/.ssh/known_hosts
-      
+      ssh-keyscan thinkcenter.dev > $HOME/.ssh/known_hosts      
       echo "Creating docker context to control the daemon on thinkcenter.dev"
       docker context create remote-thinkcenter --docker "host=ssh://admin@thinkcenter.dev,key=$HOME/.ssh/thinkcenter_rsa"
       docker context use remote-thinkcenter      
-
       export RUNNING_APP_IMAGE=$(docker ps --format "{{.Image}}" --filter "name=((container_name))" --filter "status=running")      
       if [[ -n "${RUNNING_APP_IMAGE}" ]];
       then
