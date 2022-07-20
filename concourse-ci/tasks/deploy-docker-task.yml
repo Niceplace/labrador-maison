@@ -4,25 +4,58 @@ platform: linux
 image_resource:
   type: registry-image
   source:
-    repository: fhivemind/concourse-dind/
+    repository: fhivemind/concourse-dind
 
 inputs:
   - name: image
   
 run:
-  path: sh
+  path: bash
   args: 
     - -c
     - |
       mkdir -p $HOME/.ssh
-      echo "((thinkcenter-ssh-key))" > $HOME/.ssh/thinkcenter_rsa
-      ssh-add thinkcenter_rsa
-      ssh-keyscan -t rsa thinkcenter.dev >> $HOME/.ssh/known_hosts
-      echo "Listing docker context"
+      echo "((deploy_docker_thinkcenter_ssh_config))" > $HOME/.ssh/config
+      echo "((deploy_docker_thinkcenter_ssh_private))" > $HOME/.ssh/thinkcenter_rsa
+      echo "((deploy_docker_thinkcenter_ssh_public))" > $HOME/.ssh/thinkcenter_rsa.pub
+      echo "Setting permissions for SSH keys and directories"
+      chmod -R 700 $HOME/.ssh
+      chmod 600 $HOME/.ssh/thinkcenter_rsa
+      chmod 644 $HOME/.ssh/thinkcenter_rsa.pub
+      echo "Adding our SSH key to the agent to communicate with thinkcenter"
+      eval $(ssh-agent -s)
+      ssh-add $HOME/.ssh/thinkcenter_rsa
+      ssh-keyscan thinkcenter.dev > $HOME/.ssh/known_hosts      
+      echo "Creating docker context to control the daemon on thinkcenter.dev"
       docker context create remote-thinkcenter --docker "host=ssh://admin@thinkcenter.dev,key=$HOME/.ssh/thinkcenter_rsa"
-      docker context use remote-thinkcenter
-      echo "Listing currently running containers"
-      docker ps -a
+      docker context use remote-thinkcenter            
+      export EXISTING_APP_CONTAINERS_IDS=$(docker ps -a --format "{{.ID}}" --filter "name=((deploy_docker_container_name))")
+      echo "Existing container IDs ${EXISTING_APP_CONTAINERS_IDS}"
+      if [[ -n "${EXISTING_APP_CONTAINERS_IDS}" ]]; 
+      then 
+        echo "Stopping and removing existing containers for ((deploy_docker_container_name))"
+        docker stop "${EXISTING_APP_CONTAINERS_IDS}"
+        docker rm "${EXISTING_APP_CONTAINERS_IDS}"
+      fi
+      echo "Loading and tagging ((deploy_docker_deployable_image_name))"
+      docker load --input image/image.tar
+      docker tag $(cat image/digest) ((deploy_docker_deployable_image_name))
+      echo "Running ((deploy_docker_deployable_image_name)) with name ((deploy_docker_container_name))"
+      docker run \
+      --name=((deploy_docker_container_name)) \
+      --detach \
+      --network=thinknetwork \
+      --label "traefik.enable=true" \
+      --label "traefik.http.routers.((deploy_docker_container_name)).rule=Host(\`((deploy_docker_app_url_reverse_proxy))\`)" \
+      --label "traefik.http.routers.((deploy_docker_container_name)).entrypoints=websecure" \
+      --label "traefik.http.routers.((deploy_docker_container_name)).tls=true" \
+      --label "traefik.http.services.((deploy_docker_container_name)).loadbalancer.server.port=((deploy_docker_app_server_port))" \
+      --env "DASHBITS_ENV=production" \
+      ((deploy_docker_deployable_image_name))
+      echo "Done deploying ((deploy_docker_deployable_image_name)) with name ((deploy_docker_container_name)) !"
+
+
+      
       
 
 

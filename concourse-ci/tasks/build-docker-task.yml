@@ -14,8 +14,8 @@ outputs:
   - name: image
 
 params: 
-  CONTEXT: app-source/((build_docker_task_dockerfile_dir_path))
-  BUILD_ARG_BACKEND_APP_VERSION: app-source/.git/HEAD
+  CONTEXT: app-source/((build_docker_dockerfile_dir_path))
+  BUILD_ARG_BACKEND_APP_VERSION: ((build_docker_app_version))
 
 run:
   path: build
