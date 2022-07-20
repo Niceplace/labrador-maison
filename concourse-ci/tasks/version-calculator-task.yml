@@ -49,6 +49,8 @@ run:
       esac
       
       echo "Updating version in git"      
+      git config user.email "worker@concourse.thinkcenter.dev"
+      git config user.name "Concourse Thinkcenter Worker"
       git commit -a -m "Version bump ((current_version)) -> ${NEW_VERSION}"
       git tag "v${NEW_VERSION}"
       echo "${NEW_VERSION}" > version/new_version

@@ -98,7 +98,7 @@ jobs:
           current_version: ((.:app_version))
       - load_var: new_version
         file: version/new_version # output from bump-version task
-      - put: app
+      - put: github-repo-app
         params:
           repository: repo # output from bump-version task
       - put: deno-app-docker-image
