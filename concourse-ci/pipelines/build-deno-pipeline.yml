@@ -80,16 +80,7 @@ jobs:
       #   vars:            
       #     deno_task_command_and_args: "deno test --allow-read --allow-env app/backend/*.test.integration.ts"
       #   input_mapping:
-      #     app: app
-      - task: deno-build-docker
-        privileged: true
-        file: ci/concourse-ci/tasks/build-docker-task.yml
-        input_mapping:
-          app-source: app
-        output_mapping:
-          image: docker-image-fresh-build
-        vars:            
-          build_docker_task_dockerfile_dir_path: "backend"
+      #     app: app      
       - task: bump-version
         file: ci/concourse-ci/tasks/version-calculator-task.yml
         input_mapping:
@@ -102,6 +93,16 @@ jobs:
       - put: github-repo-app
         params:
           repository: repo # output from bump-version task
+      - task: deno-build-docker
+        privileged: true
+        file: ci/concourse-ci/tasks/build-docker-task.yml
+        input_mapping:
+          app-source: app
+        output_mapping:
+          image: docker-image-fresh-build
+        vars:            
+          build_docker_task_dockerfile_dir_path: "backend"
+          build_docker_app_version: ((.:new_version))
       - put: deno-app-docker-image
         inputs:
           - docker-image-fresh-build
