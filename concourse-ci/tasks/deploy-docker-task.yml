@@ -10,7 +10,7 @@ inputs:
   - name: image
   
 run:
-  path: sh
+  path: bash
   args: 
     - -c
     - |
