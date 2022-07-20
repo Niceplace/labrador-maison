@@ -31,6 +31,7 @@ run:
 
       export RUNNING_APP_IMAGE=$(docker ps --format "{{.Image}}" --filter "name=((container_name))" --filter "status=running")      
       if [[ -n "${RUNNING_APP_IMAGE}" ]];
+      then
         echo "Stopping and removing containers using ${RUNNING_APP_IMAGE} and deleting the image from the local cache"
         docker stop ((container_name))
         docker rm ((container_name))
