@@ -51,7 +51,7 @@ run:
       --label "traefik.http.routers.((container_name)).tls=true" \
       --label "traefik.http.services.((container_name)).loadbalancer.server.port=((app_server_port))" \
       --env "DASHBITS_ENV=production" \
-      ((deployable_image_name)) \
+      ((deployable_image_name))
       echo "Done deploying ((deployable_image_name)) with name ((container_name)) !"
 
 
