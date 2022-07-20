@@ -30,14 +30,7 @@ run:
       docker context create remote-thinkcenter --docker "host=ssh://admin@thinkcenter.dev,key=$HOME/.ssh/thinkcenter_rsa"
       docker context use remote-thinkcenter            
       export EXISTING_APP_CONTAINERS_IDS=$(docker ps --format "{{.ID}}" --filter "name=((container_name))")
-    - >
-      if [[ -n "${EXISTING_APP_CONTAINERS_IDS}" ]];
-      then
-      echo "Stopping and removing existing containers for ((container_name))";
-      docker stop "${EXISTING_APP_CONTAINERS_IDS}";
-      docker rm "${EXISTING_APP_CONTAINERS_IDS}";
-      fi
-    - |
+      if [[ -n "${EXISTING_APP_CONTAINERS_IDS}" ]]; then echo "Stopping and removing existing containers for ((container_name))"; docker stop "${EXISTING_APP_CONTAINERS_IDS}"; docker rm "${EXISTING_APP_CONTAINERS_IDS}"; fi
       echo "Loading and tagging ((deployable_image_name))"
       docker load --input image/image.tar
       docker tag $(cat image/digest) ((deployable_image_name))
