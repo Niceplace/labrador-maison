@@ -96,6 +96,7 @@ jobs:
           repo: app
         vars:
           current_version: ((.:app_version))
+          version_file_path: repo/backend/VERSION
       - load_var: new_version
         file: version/new_version # output from bump-version task
       - put: github-repo-app
