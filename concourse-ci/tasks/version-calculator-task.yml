@@ -8,12 +8,14 @@ image_resource:
     tag: 18-slim
 
 caches:
-  - 
+  -  
+
 inputs:
   - name: repo
 
 outputs:
   - name: version
+  - name: repo
 
 run:
   path: sh
@@ -21,7 +23,8 @@ run:
     - -c
     - | 
       apt-get -qq update && apt-get -q install git -y        
-      export COMMIT_MESSAGE=$(cd repo && git log -1 --format=%B)
+      cd repo
+      export COMMIT_MESSAGE=$(git log -1 --format=%B)
       echo "Current working directory is"
       pwd
       echo "Commit message is ${COMMIT_MESSAGE}"
@@ -44,5 +47,8 @@ run:
           echo "No relevant keyword found in commit, defaulting to patch update. ((current_version)) -> ${NEW_VERSION}"
           ;;          
       esac
-      echo "Writing new version to output file"
+      
+      echo "Updating version in git"      
+      git commit -a -m "Version bump ((current_version)) -> ${NEW_VERSION}"
+      git tag "v${NEW_VERSION}"
       echo "${NEW_VERSION}" > version/new_version

@@ -4,7 +4,7 @@ platform: linux
 image_resource:
   type: registry-image
   source:
-    repository: fhivemind/concourse-dind/
+    repository: fhivemind/concourse-dind
 
 inputs:
   - name: image
@@ -15,20 +15,38 @@ run:
     - -c
     - |
       mkdir -p $HOME/.ssh
-      echo "((thinkcenter-ssh-config))" > $HOME/.ssh/config
-      echo "((thinkcenter-ssh-private))" > $HOME/.ssh/thinkcenter_rsa
-      echo "((thinkcenter-ssh-public))" > $HOME/.ssh/thinkcenter_rsa.pub
+      echo "((thinkcenter_ssh_config))" > $HOME/.ssh/config
+      echo "((thinkcenter_ssh_private))" > $HOME/.ssh/thinkcenter_rsa
+      echo "((thinkcenter_ssh_public))" > $HOME/.ssh/thinkcenter_rsa.pub
       chmod -R 700 $HOME/.ssh
       chmod 644 $HOME/.ssh/thinkcenter_rsa
       chmod 700 $HOME/.ssh/thinkcenter_rsa.pub
       ssh-agent /bin/bash
       ssh-add $HOME/.ssh/thinkcenter_rsa
       ssh-keyscan -t rsa thinkcenter.dev > $HOME/.ssh/known_hosts
-      echo "Listing docker context"
+      
+      echo "Creating docker context to control the daemon on thinkcenter.dev"
       docker context create remote-thinkcenter --docker "host=ssh://admin@thinkcenter.dev,key=$HOME/.ssh/thinkcenter_rsa"
-      docker context use remote-thinkcenter
-      echo "Listing currently running containers"
-      docker ps -a
+      docker context use remote-thinkcenter      
+
+      export RUNNING_APP_IMAGE=$(docker ps --format "{{.Image}}" --filter "name=((container_name))" --filter "status=running")      
+      if [[ -n "${RUNNING_APP_IMAGE}" ]];
+        echo "Stopping and removing containers using ${RUNNING_APP_IMAGE} and deleting the image from the local cache"
+        docker stop ((container_name))
+        docker rm ((container_name))
+        docker rmi ${RUNNING_APP_IMAGE}
+      fi
+
+      echo "Loading and starting ((container_name)):((image_version_to_deploy))"
+      docker load --input image/image.tar
+      docker tag $(cat image/digest) ((container_name))
+      docker run ((container_name)):((image_version_to_deploy)) --name=((container_name)) \
+        --label "traefik.enable=true" \
+        --label "traefik.http.routers.((container_name)).rule=Host(`((app_url_reverse_proxy))`)" \
+        --label "traefik.http.routers.((container_name)).entrypoints=websecure" \
+        --label "traefik.http.routers.((container_name)).tls=true" \
+        --label "traefik.http.services.((container_name)).loadbalancer.server.port=((app_server_port))"
+
       
 
 
