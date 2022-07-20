@@ -37,6 +37,15 @@ run:
         docker rm ((container_name))
         docker rmi ${RUNNING_APP_IMAGE}
       fi
+      echo "Loading and starting ((container_name)):((image_version_to_deploy))"
+      docker load --input image/image.tar
+      docker tag $(cat image/digest) ((container_name))
+      docker run ((container_name)):((image_version_to_deploy)) --name=((container_name)) \
+        --label "traefik.enable=true" \
+        --label "traefik.http.routers.((container_name)).rule=Host(`((app_url_reverse_proxy))`)" \
+        --label "traefik.http.routers.((container_name)).entrypoints=websecure" \
+        --label "traefik.http.routers.((container_name)).tls=true" \
+        --label "traefik.http.services.((container_name)).loadbalancer.server.port=((app_server_port))"
 
       
       
