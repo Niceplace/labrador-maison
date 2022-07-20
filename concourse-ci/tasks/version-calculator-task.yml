@@ -10,8 +10,8 @@ image_resource:
 # Cache directories are relative to the working directory of the task :/
 # See: https://concourse-ci.org/tasks.html#schema.cache
 caches:  
-  - ../../../var/lib/apt/lists
-  - ../../../var/cache/apt
+  - path: ../../../var/lib/apt/lists
+  - path: ../../../var/cache/apt
 
 inputs:
   - name: repo
