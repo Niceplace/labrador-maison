@@ -19,8 +19,8 @@ run:
       echo "((thinkcenter_ssh_private))" > $HOME/.ssh/thinkcenter_rsa
       echo "((thinkcenter_ssh_public))" > $HOME/.ssh/thinkcenter_rsa.pub
       chmod -R 700 $HOME/.ssh
-      chmod 644 $HOME/.ssh/thinkcenter_rsa
-      chmod 700 $HOME/.ssh/thinkcenter_rsa.pub
+      chmod 600 $HOME/.ssh/thinkcenter_rsa
+      chmod 644 $HOME/.ssh/thinkcenter_rsa.pub
       ssh-agent /bin/bash
       ssh-add $HOME/.ssh/thinkcenter_rsa
       ssh-keyscan thinkcenter.dev > $HOME/.ssh/known_hosts
