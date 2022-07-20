@@ -29,10 +29,10 @@ run:
       echo "Creating docker context to control the daemon on thinkcenter.dev"
       docker context create remote-thinkcenter --docker "host=ssh://admin@thinkcenter.dev,key=$HOME/.ssh/thinkcenter_rsa"
       docker context use remote-thinkcenter            
-      export EXISTING_APP_CONTAINERS_IDS=$(docker ps --format "{{.ID}}" --filter "name=((container_name))" --filter "status=running")
+      export EXISTING_APP_CONTAINERS_IDS=$(docker ps --format "{{.ID}}" --filter "name=((container_name))")
       if [[ -n "${EXISTING_APP_CONTAINERS_IDS}" ]];
       then
-        echo "Stopping and removing containers using ${RUNNING_APP_IMAGE}"
+        echo "Stopping and removing existing containers for ((container_name))"
         docker stop "${EXISTING_APP_CONTAINERS_IDS}"
         docker rm "${EXISTING_APP_CONTAINERS_IDS}"
       fi
@@ -44,11 +44,13 @@ run:
       docker run 
       --name=((container_name))
       --detach
+      --network=thinknetwork
       --label "traefik.enable=true"
-      --label "traefik.http.routers.((container_name)).rule=Host(`((app_url_reverse_proxy))`)"
+      --label "traefik.http.routers.((container_name)).rule=Host(\`((app_url_reverse_proxy))\`)"
       --label "traefik.http.routers.((container_name)).entrypoints=websecure"
       --label "traefik.http.routers.((container_name)).tls=true"
       --label "traefik.http.services.((container_name)).loadbalancer.server.port=((app_server_port))"
+      --env "DASHBITS_ENV=production"
       ((deployable_image_name))
 
       
