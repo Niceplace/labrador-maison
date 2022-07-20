@@ -1,19 +1,19 @@
 ---
-# resource_types:
-# - name: cogito
-#   type: registry-image
-#   check_every: 1h
-#   source:
-#     repository: pix4d/cogito
+resource_types:
+- name: cogito
+  type: registry-image
+  check_every: 1h
+  source:
+    repository: pix4d/cogito
 
 resources:
-  # - name: gh-status
-  #   type: cogito
-  #   check_every: 1h
-  #   source:
-  #     owner: Niceplace
-  #     repo: dashbits
-  #     access_token: ((github.accesstoken))
+  - name: gh-status
+    type: cogito
+    check_every: 1h
+    source:
+      owner: Niceplace
+      repo: dashbits
+      access_token: ((github.accesstoken))
   - name: github-repo-app
     type: git
     source:
@@ -40,55 +40,55 @@ resources:
 
 jobs:
   - name: deno-check
-    # on_success:
-    #   put: gh-status
-    #   inputs: [github-repo-app]
-    #   params: {state: success}
-    # on_failure:
-    #   put: gh-status
-    #   inputs: [github-repo-app]
-    #   params: {state: failure}        
-    # on_error:
-    #   put: gh-status
-    #   inputs: [github-repo-app]
-    #   params: {state: error}
+    on_success:
+      put: gh-status
+      inputs: [github-repo-app]
+      params: {state: success}
+    on_failure:
+      put: gh-status
+      inputs: [github-repo-app]
+      params: {state: failure}        
+    on_error:
+      put: gh-status
+      inputs: [github-repo-app]
+      params: {state: error}
     plan:
       - in_parallel:
         - get: app
           resource: github-repo-app
         - get: ci
           resource: github-repo-ci
-      # - put: gh-status
-      #   inputs: [app]
-      #   params: {state: pending}
-      - load_var: app_version
+      - put: gh-status
+        inputs: [app]
+        params: {state: pending}
+      - task: deno-format-check-and-lint
+        file: ci/concourse-ci/tasks/deno-task.yml
+        vars: 
+          deno_command_and_args: "deno fmt --check app/backend/"
+        input_mapping:
+          app: app
+      - task: deno-unit-tests
+        file: ci/concourse-ci/tasks/deno-task.yml
+        vars:
+          deno_command_and_args: "deno test app/backend/*.test.unit.ts"
+        input_mapping:
+          app: app
+      - task: deno-integration-tests
+        file: ci/concourse-ci/tasks/deno-task.yml
+        vars:            
+          deno_command_and_args: "deno test --allow-read --allow-env app/backend/*.test.integration.ts"
+        input_mapping:
+          app: app      
+      - load_var: app_backend_version_current
         file: app/backend/VERSION
-      # - task: deno-format-check-and-lint
-      #   file: ci/concourse-ci/tasks/deno-task.yml
-      #   vars: 
-      #     deno_task_command_and_args: "deno fmt --check app/backend/"
-      #   input_mapping:
-      #     app: app
-      # - task: deno-unit-tests
-      #   file: ci/concourse-ci/tasks/deno-task.yml
-      #   vars:
-      #     deno_task_command_and_args: "deno test app/backend/*.test.unit.ts"
-      #   input_mapping:
-      #     app: app
-      # - task: deno-integration-tests
-      #   file: ci/concourse-ci/tasks/deno-task.yml
-      #   vars:            
-      #     deno_task_command_and_args: "deno test --allow-read --allow-env app/backend/*.test.integration.ts"
-      #   input_mapping:
-      #     app: app      
       - task: bump-version
         file: ci/concourse-ci/tasks/version-calculator-task.yml
         input_mapping:
           repo: app
         vars:
-          current_version: ((.:app_version))
-          version_file_path: backend/VERSION
-      - load_var: new_version
+          version_calculator_current_version: ((.:app_backend_version_current))
+          version_calculator_version_file_path: backend/VERSION
+      - load_var: app_backend_version_new
         file: version/new_version # output from bump-version task
       - put: github-repo-app
         params:
@@ -101,8 +101,8 @@ jobs:
         output_mapping:
           image: docker-image-fresh-build
         vars:            
-          build_docker_task_dockerfile_dir_path: "backend"
-          build_docker_app_version: ((.:new_version))
+          build_docker_dockerfile_dir_path: "backend"
+          build_docker_app_version: ((.:app_backend_version_new))
       - put: deno-app-docker-image
         inputs:
           - docker-image-fresh-build
@@ -110,19 +110,18 @@ jobs:
         params: 
           image: docker-image-fresh-build/image.tar
           additional_tags: app/.git/HEAD
-          version: ((.:new_version))
-          bump_aliases: true
-      # Update the version in the file, push the changes & add changelog ?
+          version: ((.:app_backend_version_new))
+          bump_aliases: true      
       - task: deno-deploy-dashbits-backend
         privileged: true
         file: ci/concourse-ci/tasks/deploy-docker-task.yml
         input_mapping:
           image: docker-image-fresh-build
         vars:
-          thinkcenter_ssh_config: ((thinkcenter_ssh_config))
-          thinkcenter_ssh_private: ((thinkcenter_ssh_private))
-          thinkcenter_ssh_public: ((thinkcenter_ssh_public))                              
-          deployable_image_name: "registry.thinkcenter.dev/dashbits-backend:((.:new_version))"
-          container_name: dashbits-backend
-          app_url_reverse_proxy: dashbits-backend.thinkcenter.dev
-          app_server_port: "3000"
+          deploy_docker_thinkcenter_ssh_config: ((thinkcenter_ssh_config))
+          deploy_docker_thinkcenter_ssh_private: ((thinkcenter_ssh_private))
+          deploy_docker_thinkcenter_ssh_public: ((thinkcenter_ssh_public))                              
+          deploy_docker_deployable_image_name: "registry.thinkcenter.dev/dashbits-backend:((.:app_backend_version_new))"
+          deploy_docker_container_name: dashbits-backend
+          deploy_docker_app_url_reverse_proxy: dashbits-backend.thinkcenter.dev
+          deploy_docker_app_server_port: "3000"

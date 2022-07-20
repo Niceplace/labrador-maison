@@ -25,38 +25,35 @@ run:
   args: 
     - -c
     - | 
-      apt-get -qq update && apt-get -q install git -y              
+      apt-get -qq update && apt-get -q install git -y
       export COMMIT_MESSAGE=$(cd repo && git log -1 --format=%B)
       echo "Current working directory is"
       pwd
       echo "Commit message is ${COMMIT_MESSAGE}"
-      echo "Current version is ((current_version))"      
-      case "${COMMIT_MESSAGE}" in 
-        fix/* ) 
-          NEW_VERSION=$(npx --yes semver -i patch ((current_version)) )
-          echo "Based on commit message, version gets a patch update. ((current_version)) -> ${NEW_VERSION}"
+      echo "Current version is ((version_calculator_current_version))"
+      case "${COMMIT_MESSAGE}" in
+        fix/* )
+          NEW_VERSION=$(npx --yes semver -i patch ((version_calculator_current_version)) )
+          echo "Based on commit message, version gets a patch update. ((version_calculator_current_version)) -> ${NEW_VERSION}"
           ;;
-        feat/* ) 
-          NEW_VERSION=$(npx --yes semver -i minor ((current_version)) )
-          echo "Based on commit message, version gets a minor update. ((current_version)) -> ${NEW_VERSION}"
+        feat/* )
+          NEW_VERSION=$(npx --yes semver -i minor ((version_calculator_current_version)) )
+          echo "Based on commit message, version gets a minor update. ((version_calculator_current_version)) -> ${NEW_VERSION}"
           ;;
-        breaking/* ) 
-          NEW_VERSION=$(npx --yes semver -i major ((current_version)) )
-          echo "Based on commit message, version gets a major update. ((current_version)) -> ${NEW_VERSION}"
+        breaking/* )
+          NEW_VERSION=$(npx --yes semver -i major ((version_calculator_current_version)) )
+          echo "Based on commit message, version gets a major update. ((version_calculator_current_version)) -> ${NEW_VERSION}"
           ;;
-        *) 
-          NEW_VERSION=$(npx --yes semver -i patch ((current_version)) )
-          echo "No relevant keyword found in commit, defaulting to patch update. ((current_version)) -> ${NEW_VERSION}"
-          ;;          
+        *)
+          NEW_VERSION=$(npx --yes semver -i patch ((version_calculator_current_version)) )
+          echo "No relevant keyword found in commit, defaulting to patch update. ((version_calculator_current_version)) -> ${NEW_VERSION}"
+          ;;
       esac
       echo "${NEW_VERSION}" > version/new_version
-
-      echo "Updating version in git"      
+      echo "Updating version in git"
       cd repo
-      echo "${NEW_VERSION}" > ((version_file_path))
+      echo "${NEW_VERSION}" > ((version_calculator_version_file_path))
       git config user.email "worker@concourse.thinkcenter.dev"
       git config user.name "Concourse Thinkcenter Worker"
       git tag "v${NEW_VERSION}"
-      git commit -a -m "Version bump ((current_version)) -> ${NEW_VERSION}"
-      
-      
+      git commit -a -m "Version bump ((version_calculator_current_version)) -> ${NEW_VERSION}"
