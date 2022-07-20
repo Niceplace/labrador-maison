@@ -124,4 +124,4 @@ jobs:
           image_version_to_deploy: ((.:new_version))
           container_name: dashbits-backend
           app_url_reverse_proxy: dashbits-backend.thinkcenter.dev
-          app_server_port: 3000
+          app_server_port: "3000"
