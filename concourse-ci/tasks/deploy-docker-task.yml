@@ -28,25 +28,26 @@ run:
       ssh-keyscan thinkcenter.dev > $HOME/.ssh/known_hosts      
       echo "Creating docker context to control the daemon on thinkcenter.dev"
       docker context create remote-thinkcenter --docker "host=ssh://admin@thinkcenter.dev,key=$HOME/.ssh/thinkcenter_rsa"
-      docker context use remote-thinkcenter      
-      export RUNNING_APP_IMAGE=$(docker ps --format "{{.Image}}" --filter "name=((container_name))" --filter "status=running")
-      if [[ -n "${RUNNING_APP_IMAGE}" ]];
+      docker context use remote-thinkcenter            
+      export EXISTING_APP_CONTAINERS_IDS=$(docker ps --format "{{.ID}}" --filter "name=((container_name))" --filter "status=running")
+      if [[ -n "${EXISTING_APP_CONTAINERS_IDS}" ]];
       then
-        echo "Stopping and removing containers using ${RUNNING_APP_IMAGE} and deleting the image from the local cache"
-        docker stop ((container_name))
-        docker rm ((container_name))
-        docker rmi ${RUNNING_APP_IMAGE}
+        echo "Stopping and removing containers using ${RUNNING_APP_IMAGE}"
+        docker stop "${EXISTING_APP_CONTAINERS_IDS}"
+        docker rm "${EXISTING_APP_CONTAINERS_IDS}"
       fi
       echo "Loading and tagging ((deployable_image_name))"
       docker load --input image/image.tar
       docker tag $(cat image/digest) ((deployable_image_name))
       echo "Running ((deployable_image_name)) with name ((container_name))"
-      docker run --name=((container_name)) -d ((deployable_image_name)) \
+      docker run --name=((container_name)) \ 
+        --detach \
         --label "traefik.enable=true" \
         --label "traefik.http.routers.((container_name)).rule=Host(`((app_url_reverse_proxy))`)" \
         --label "traefik.http.routers.((container_name)).entrypoints=websecure" \
         --label "traefik.http.routers.((container_name)).tls=true" \
-        --label "traefik.http.services.((container_name)).loadbalancer.server.port=((app_server_port))"
+        --label "traefik.http.services.((container_name)).loadbalancer.server.port=((app_server_port))" \
+        ((deployable_image_name))
 
       
       
