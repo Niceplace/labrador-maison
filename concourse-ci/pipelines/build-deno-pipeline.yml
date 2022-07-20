@@ -120,8 +120,8 @@ jobs:
         vars:
           thinkcenter_ssh_config: ((thinkcenter_ssh_config))
           thinkcenter_ssh_private: ((thinkcenter_ssh_private))
-          thinkcenter_ssh_public: ((thinkcenter_ssh_public))                    
-          image_version_to_deploy: ((.:new_version))
+          thinkcenter_ssh_public: ((thinkcenter_ssh_public))                              
+          deployable_image_name: "registry.thinkcenter.dev/dashbits-backend:((.:new_version))"
           container_name: dashbits-backend
           app_url_reverse_proxy: dashbits-backend.thinkcenter.dev
           app_server_port: "3000"
