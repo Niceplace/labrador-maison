@@ -4,7 +4,8 @@ platform: linux
 image_resource:
   type: registry-image
   source:
-    repository: fhivemind/concourse-dind
+    repository: ramizpolic/concourse-dind
+    tag: v2.0.0
 
 inputs:
   - name: image
