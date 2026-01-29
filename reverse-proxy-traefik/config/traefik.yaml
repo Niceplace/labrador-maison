@@ -3,7 +3,7 @@ global:
   checkNewVersion: true
 log:
   level: DEBUG
-  #Since I am using dozzle for log vieweing, prefer STDOUT for this
+  # TODO: Forward this to Grafana instance once setup
   #filePath: "/var/logs/traefik/log-base.log"
 accessLog:
   filePath: "/var/logs/traefik/access.log"
@@ -25,7 +25,6 @@ providers:
 entryPoints:
   web:
     address: :80
-    # comment out these lins if you don't want to redirect everything
     http:
       redirections:
         entryPoint:
