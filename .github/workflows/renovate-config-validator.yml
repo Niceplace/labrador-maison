@@ -1,0 +1,35 @@
+name: Renovate Config Validator
+
+on:
+  # Run when either Renovate config file is modified
+  push:
+    paths:
+      - '.github/renovate-config.js'
+      - '.github/renovate.json5'
+  # Allow manual triggering for testing
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run Renovate Config Validator
+        run: |
+          npx --yes --package renovate -- renovate-config-validator \
+            --no-global \
+            .github/renovate-config.js \
+            .github/renovate.json5
+
+      - name: Fail if validation failed
+        if: failure()
+        run: |
+          echo "::error::Renovate configuration validation failed. Please check the error messages above."
+          exit 1
