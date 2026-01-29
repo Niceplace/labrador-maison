@@ -2,12 +2,20 @@
   // Renovate configuration for labrador-maison
   // https://docs.renovatebot.com/configuration-options/
 
-  // Platform configuration
-  "platform": "github",
-  "timezone": "America/Toronto",
-
-  // Extend recommended base configuration
-  "extends": ["config:recommended"],
+  // Custom managers for tracking Docker images in Concourse CI tasks
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update Docker images in Concourse CI task YAML files",
+      "managerFilePatterns": ["concourse-ci/tasks/*.yml"],
+      "matchStrings": [
+        "repository:\\s+(?<depName>[a-z0-9/_.:-]+?)(?:\\s*tag:\\s+(?<currentValue>[a-z0-9._-]+?))?"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker",
+      "pinDigests": true
+    }
+  ],
 
   // Unlimited concurrent PRs and branches
   "prConcurrentLimit": 0,
@@ -41,9 +49,5 @@
   "labels": ["dependencies"],
 
   // Use semantic commit messages
-  "semanticCommits": true,
-
-  // Disable onboarding since we're providing explicit config
-  "onboarding": false,
-  "requireConfig": "optional"
+  "semanticCommits": true
 }
