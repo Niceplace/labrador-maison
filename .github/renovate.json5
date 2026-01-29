@@ -12,8 +12,7 @@
         "repository:\\s+(?<depName>[a-z0-9/_.:-]+?)(?:\\s*tag:\\s+(?<currentValue>[a-z0-9._-]+?))?"
       ],
       "datasourceTemplate": "docker",
-      "versioningTemplate": "docker",
-      "pinDigests": true
+      "versioningTemplate": "docker"
     }
   ],
 
