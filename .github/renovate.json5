@@ -1,0 +1,49 @@
+{
+  // Renovate configuration for labrador-maison
+  // https://docs.renovatebot.com/configuration-options/
+
+  // Platform configuration
+  "platform": "github",
+  "timezone": "America/Toronto",
+
+  // Extend recommended base configuration
+  "extends": ["config:recommended"],
+
+  // Unlimited concurrent PRs and branches
+  "prConcurrentLimit": 0,
+  "branchConcurrentLimit": 0,
+
+  // Enable digest pinning for Docker images
+  "docker-compose": {
+    "pinDigests": true
+  },
+
+  // Package rules for automerging and release age delays
+  "packageRules": [
+    {
+      // Automerge minor, patch, pin, and digest updates
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
+    },
+    {
+      // Never automerge major updates
+      // Delay major updates by 7 days before proposing
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "minimumReleaseAge": "7 days"
+    }
+  ],
+
+  // Use GitHub platform automerge (via merge button)
+  "platformAutomerge": true,
+
+  // Add labels to all PRs
+  "labels": ["dependencies"],
+
+  // Use semantic commit messages
+  "semanticCommits": true,
+
+  // Disable onboarding since we're providing explicit config
+  "onboarding": false,
+  "requireConfig": "optional"
+}
