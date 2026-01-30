@@ -2,7 +2,7 @@ version: "3"
 services:
   container-registry:
     container_name: registry
-    image: registry:2.8
+    image: registry:2.8@sha256:a3d8aaa63ed8681a604f1dea0aa03f100d5895b6a58ace528858a7b332415373
     restart: unless-stopped
     environment:
       - "REGISTRY_LOG_LEVEL=debug"
@@ -20,7 +20,7 @@ services:
     networks:
       - default
   container-registry-ui:
-    image: joxit/docker-registry-ui:2.2.1-debian
+    image: joxit/docker-registry-ui:2.2.1-debian@sha256:19f4952324554f595e7f5dadd63fc94fd06245cc4a6e9d6afea2dd1c77f25c09
     restart: unless-stopped
     environment:
       - "NGINX_PROXY_PASS_URL=http://registry:5000" # Nginx can directly talk to the container, config that is not NGINX should be assumed to act client side
