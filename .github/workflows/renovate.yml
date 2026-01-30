@@ -3,7 +3,7 @@ name: Renovate
 on:
   schedule:
     # Run every Wednesday at 10:00 UTC (05:00 AM EST / 04:00 AM EDT)
-    - cron: '0 10 * * 3'
+    - cron: "0 10 * * 3"
   workflow_dispatch:
 
 jobs:
@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
 
       - name: Self-hosted Renovate
-        uses: renovatebot/github-action@v44.2.6
+        uses: renovatebot/github-action@957af03d760b2c87fc65cb95628f6d5f95d9c578 #v46.0.0
         with:
           configurationFile: .github/renovate-config.js
           token: ${{ secrets.RENOVATE_TOKEN }}
