@@ -4,13 +4,13 @@ on:
   # Run when either Renovate config file is modified
   push:
     paths:
-      - '.github/renovate-config.js'
-      - '.github/renovate.json5'
+      - ".github/renovate-config.js"
+      - ".github/renovate.json5"
   # Run when a PR is opened/synced that changes Renovate config
   pull_request:
     paths:
-      - '.github/renovate-config.js'
-      - '.github/renovate.json5'
+      - ".github/renovate-config.js"
+      - ".github/renovate.json5"
   # Allow manual triggering for testing
   workflow_dispatch:
 
@@ -25,15 +25,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
 
-      - name: Setup Bun
+      - name: Setup Node.js
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 #v6.2.0
+        with:
+          node-version: "lts/*"
+
+      - name: Setup Bun.sh
         uses: oven-sh/setup-bun@3d267786b128fe76c2f16a390aa2448b815359f3 #v2.1.2
         with:
-          bun-version: '1.x.x'
+          bun-version: "1.x"
 
       - name: Run Renovate Config Validator
         id: validate
         run: |
-          bunx --yes --package renovate -- renovate-config-validator \
+          # Need to use npx because bun crashes with a segfault when trying to load re2.node: https://github.com/oven-sh/bun/issues/4290
+          npx --yes --package renovate -- renovate-config-validator \
             .github/renovate-config.js \
             .github/renovate.json5 2>&1 | tee renovate-validation-output.log
 
@@ -42,10 +48,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          bun scripts/for-github-actions/renovate-config-comment.ts "$(cat renovate-validation-output.log)" "${{ github.event.pull_request.number }}"
+          bun run ./github/scripts/renovate-config-comment.ts "$(cat renovate-validation-output.log)" "${{ github.event.pull_request.number }}"
 
       - name: Show helpful error message
-        if: failure()
+        if: failure() && github.event_name == 'pull_request'
         run: |
           cat << 'EOF' >> $GITHUB_STEP_SUMMARY
 
@@ -70,9 +76,5 @@ jobs:
           - [Common errors](https://github.com/renovatebot/renovate/issues?q=is%3Aissue+label%3Aconfig+error)
 
           EOF
-
-      - name: Fail if validation failed
-        if: failure()
-        run: |
-          echo "::error::Renovate configuration validation failed. Check the validation output above for details."
+          echo "::error::Renovate configuration validation failed. Check the comments on pull request ${{ github.event.pull_request.number }} for more details"
           exit 1
