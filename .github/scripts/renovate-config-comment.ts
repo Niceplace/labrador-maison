@@ -66,7 +66,7 @@ const buildCommentBody = (): string => {
 ${isSuccessful ? "✅ Configuration is valid !" : validationOutput}
 \`\`\`
 ---
-${!isSuccessful && "💡 **Tip:** Run \`bunx --yes --package renovate -- renovate-config-validator .github/renovate-config.js\` locally to test your config before pushing!"}
+${!isSuccessful ? "💡 **Tip:** Run \`bunx --yes --package renovate -- renovate-config-validator .github/renovate-config.js\` locally to test your config before pushing!" : ""}
 
 `;
 
