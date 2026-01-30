@@ -48,5 +48,17 @@
   "labels": ["dependencies"],
 
   // Use semantic commit messages
-  "semanticCommits": true
+  "semanticCommits": true,
+
+  // Enable dependency dashboard for better visibility
+  "dependencyDashboard": true,
+
+  // Customize dashboard title
+  "dependencyDashboardTitle": "🤖 Dependency Dashboard",
+
+  // Add labels to dashboard issue
+  "dependencyDashboardLabels": ["renovate", "dependencies"],
+
+  // Auto-close dashboard when no updates pending
+  "dependencyDashboardAutoclose": true
 }
