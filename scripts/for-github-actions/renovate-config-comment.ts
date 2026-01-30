@@ -131,7 +131,7 @@ const main = async (): Promise<void> => {
       )
 
       if (!createResponse.ok) {
-        throw new Error(`Failed to create comment: `)
+        throw new Error(`Failed to create comment: ${createResponse.statusText}`)
       }
 
       console.log('Created new PR comment')
