@@ -4,32 +4,77 @@ on:
   # Run when either Renovate config file is modified
   push:
     paths:
-      - '.github/renovate-config.js'
-      - '.github/renovate.json5'
+      - ".github/renovate-config.js"
+      - ".github/renovate.json5"
+  # Run when a PR is opened/synced that changes Renovate config
+  pull_request:
+    paths:
+      - ".github/renovate-config.js"
+      - ".github/renovate.json5"
   # Allow manual triggering for testing
   workflow_dispatch:
 
 jobs:
   validate:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 #v6.2.0
         with:
-          node-version: '20'
+          node-version: "lts/*"
+
+      - name: Setup Bun.sh
+        uses: oven-sh/setup-bun@3d267786b128fe76c2f16a390aa2448b815359f3 #v2.1.2
+        with:
+          bun-version: "1.x"
 
       - name: Run Renovate Config Validator
+        id: validate
         run: |
+          # Need to use npx because bun crashes with a segfault when trying to load re2.node: https://github.com/oven-sh/bun/issues/4290
           npx --yes --package renovate -- renovate-config-validator \
-            --no-global \
             .github/renovate-config.js \
-            .github/renovate.json5
+            .github/renovate.json5 2>&1 | tee renovate-validation-output.log
 
-      - name: Fail if validation failed
-        if: failure()
+      - name: Post PR comment with validation results
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "::error::Renovate configuration validation failed. Please check the error messages above."
+          bun run ./.github/scripts/renovate-config-comment.ts "$(cat renovate-validation-output.log)" "${{ github.event.pull_request.number }}"
+
+      - name: Show helpful error message
+        if: failure() && github.event_name == 'pull_request'
+        run: |
+          cat << 'EOF' >> $GITHUB_STEP_SUMMARY
+
+          ## ❌ Renovate Configuration Validation Failed
+
+          Your Renovate configuration contains errors that need to be fixed.
+
+          ### Steps to fix:
+
+          1. Review the PR comment above for specific error messages
+          2. Check the [Renovate Configuration Options documentation](https://docs.renovatebot.com/configuration-options/)
+          3. Verify that:
+             - Only valid options are used in `customManagers`
+             - Top-level options like `pinDigests` are not used inside `customManagers`
+             - All required fields are present and properly formatted
+             - JSON5 syntax is correct (trailing commas, valid escapes)
+
+          ### Quick help links:
+
+          - [Custom Managers docs](https://docs.renovatebot.com/configuration-options/#custommanagers)
+          - [Config Validation docs](https://docs.renovatebot.com/config-validation/)
+          - [Common errors](https://github.com/renovatebot/renovate/issues?q=is%3Aissue+label%3Aconfig+error)
+
+          EOF
+          echo "::error::Renovate configuration validation failed. Check the comments on pull request ${{ github.event.pull_request.number }} for more details"
           exit 1
