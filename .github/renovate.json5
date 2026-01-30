@@ -48,7 +48,7 @@
   "labels": ["dependencies"],
 
   // Use semantic commit messages
-  "semanticCommits": true,
+  "semanticCommits": "enabled",
 
   // Enable dependency dashboard for better visibility
   "dependencyDashboard": true,

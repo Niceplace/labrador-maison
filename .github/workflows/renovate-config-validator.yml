@@ -34,7 +34,6 @@ jobs:
         id: validate
         run: |
           bunx --yes --package renovate -- renovate-config-validator \
-            --no-global \
             .github/renovate-config.js \
             .github/renovate.json5 2>&1 | tee renovate-validation-output.log
 

@@ -65,7 +65,7 @@ ${validationOutput}
 
 ---
 
-💡 **Tip:** Run \`npx --yes --package renovate -- renovate-config-validator --no-global .github/renovate-config.js\` locally to test your config before pushing!
+💡 **Tip:** Run \`bunx --yes --package renovate -- renovate-config-validator .github/renovate-config.js\` locally to test your config before pushing!
 `
 
 const main = async (): Promise<void> => {

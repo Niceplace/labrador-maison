@@ -17,7 +17,6 @@ module.exports = {
   configValidationError: true,
 
   // Enable debug logging for more context when errors occur
-  logLevel: "debug",
 
   // Always use a new issue
   configWarningReuseIssue: false,
