@@ -53,20 +53,25 @@ if (!githubRepo) {
 }
 
 // Create a unique identifier for our validation comment
-const COMMENT_MARKER = "<-- renovate-config-workflow-comment -->";
+const COMMENT_MARKER = "<!-- renovate-config-workflow-comment -->";
 
-// Create comment body with validation results
-const commentBody = `${COMMENT_MARKER}
+const buildCommentBody = (): string => {
+  const isSuccessful = validationOutput.includes(
+    "Config validated successfully",
+  );
+  const body = `${COMMENT_MARKER}
 ## Renovate Config Validation Results
 
 \`\`\`
-${validationOutput}
+${isSuccessful ? "✅ Configuration is valid !" : validationOutput}
 \`\`\`
-
 ---
+${!isSuccessful && "💡 **Tip:** Run \`bunx --yes --package renovate -- renovate-config-validator .github/renovate-config.js\` locally to test your config before pushing!"}
 
-💡 **Tip:** Run \`bunx --yes --package renovate -- renovate-config-validator .github/renovate-config.js\` locally to test your config before pushing!
 `;
+
+  return body;
+};
 
 const main = async (): Promise<void> => {
   try {
@@ -107,7 +112,7 @@ const main = async (): Promise<void> => {
             "X-GitHub-Api-Version": "2022-11-28",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ body: commentBody }),
+          body: JSON.stringify({ body: buildCommentBody() }),
         },
       );
 
@@ -130,7 +135,7 @@ const main = async (): Promise<void> => {
             "X-GitHub-Api-Version": "2022-11-28",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ body: commentBody }),
+          body: JSON.stringify({ body: buildCommentBody() }),
         },
       );
 
