@@ -48,7 +48,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          bun run ./github/scripts/renovate-config-comment.ts "$(cat renovate-validation-output.log)" "${{ github.event.pull_request.number }}"
+          bun run ./.github/scripts/renovate-config-comment.ts "$(cat renovate-validation-output.log)" "${{ github.event.pull_request.number }}"
 
       - name: Show helpful error message
         if: failure() && github.event_name == 'pull_request'
