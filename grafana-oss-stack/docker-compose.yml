@@ -1,0 +1,136 @@
+version: '3.8'
+
+services:
+  # ============================================
+  # Grafana - Main UI
+  # ============================================
+  grafana:
+    image: grafana/grafana:11.3.1
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      - TZ=America/Toronto
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+      - GF_SERVER_ROOT_URL=https://grafana.thinkcenter.dev
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_PROVISIONING_ENABLED=true
+    volumes:
+      - ./config/grafana:/etc/grafana/provisioning:ro
+      - ./data/grafana:/var/lib/grafana
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=thinknetwork"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.thinkcenter.dev`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls=true"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+    networks:
+      - thinknetwork
+
+  # ============================================
+  # Prometheus - Metrics Storage
+  # ============================================
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-remote-write-receiver'
+      - '--enable-feature=remote-write-receiver'
+    volumes:
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./data/prometheus:/prometheus
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=thinknetwork"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.thinkcenter.dev`)"
+      - "traefik.http.routers.prometheus.entrypoints=websecure"
+      - "traefik.http.routers.prometheus.tls=true"
+      - "traefik.http.middlewares.prometheus-auth.basicauth.users=${PROMETHEUS_AUTH:-admin:$$apr1$$hash}"
+      - "traefik.http.routers.prometheus.middlewares=prometheus-auth"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+    networks:
+      - thinknetwork
+
+  # ============================================
+  # Loki - Log Storage
+  # ============================================
+  loki:
+    image: grafana/loki:v3.2.1
+    container_name: loki
+    restart: unless-stopped
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./config/loki/loki-config.yml:/etc/loki/local-config.yaml:ro
+      - ./data/loki:/loki
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=thinknetwork"
+      - "traefik.http.routers.loki.rule=Host(`loki.thinkcenter.dev`)"
+      - "traefik.http.routers.loki.entrypoints=websecure"
+      - "traefik.http.routers.loki.tls=true"
+      - "traefik.http.services.loki.loadbalancer.server.port=3100"
+    networks:
+      - thinknetwork
+
+  # ============================================
+  # Tempo - Tracing Storage
+  # ============================================
+  tempo:
+    image: grafana/tempo:v2.7.0
+    container_name: tempo
+    restart: unless-stopped
+    command: -config.file=/etc/tempo/config.yaml
+    volumes:
+      - ./config/tempo/tempo-config.yml:/etc/tempo/config.yaml:ro
+      - ./data/tempo:/tempo
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=thinknetwork"
+      - "traefik.http.routers.tempo.rule=Host(`tempo.thinkcenter.dev`)"
+      - "traefik.http.routers.tempo.entrypoints=websecure"
+      - "traefik.http.routers.tempo.tls=true"
+      - "traefik.http.services.tempo.loadbalancer.server.port=3200"
+    networks:
+      - thinknetwork
+
+  # ============================================
+  # Grafana Alloy - OTEL Collector
+  # ============================================
+  alloy:
+    image: grafana/alloy:v1.12.0
+    container_name: alloy
+    restart: unless-stopped
+    command: run /etc/alloy/config.alloy
+    volumes:
+      - ./config/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "4317:4317"  # OTLP gRPC
+      - "4318:4318"  # OTLP HTTP
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=thinknetwork"
+      # OTLP HTTP endpoint
+      - "traefik.http.routers.alloy-otlp-http.rule=Host(`alloy-otlp.thinkcenter.dev`)"
+      - "traefik.http.routers.alloy-otlp-http.entrypoints=websecure"
+      - "traefik.http.routers.alloy-otlp-http.tls=true"
+      - "traefik.http.services.alloy-otlp-http.loadbalancer.server.port=4318"
+    networks:
+      - thinknetwork
+    depends_on:
+      - prometheus
+      - loki
+      - tempo
+
+networks:
+  thinknetwork:
+    external: true
+    name: thinknetwork
