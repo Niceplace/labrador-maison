@@ -1,0 +1,96 @@
+# Consolidated Finance Stack - All SQLite
+# All financial apps using SQLite databases (no separate database container)
+services:
+  # Firefly III (SQLite)
+  firefly-iii:
+    image: fireflyiii/core:latest
+    container_name: firefly-iii
+    restart: unless-stopped
+    volumes:
+      - ./firefly-upload:/var/www/html/storage/upload
+      - ./firefly-db:/var/www/html/storage/database
+    env_file:
+      - ./config/firefly-iii.env
+    environment:
+      - DB_CONNECTION=sqlite
+      - TZ=America/Toronto
+    networks:
+      - thinknetwork
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.firefly.rule=Host(`firefly.thinkcenter.dev`)"
+      - "traefik.http.routers.firefly.entrypoints=websecure"
+      - "traefik.http.services.firefly.loadbalancer.server.port=8080"
+
+  # IHateMoney (SQLite)
+  ihatemoney:
+    image: ihatemoney/ihatemoney:latest
+    container_name: ihatemoney
+    restart: unless-stopped
+    volumes:
+      - ./ihatemoney-db:/database
+    environment:
+      - DEBUG=False
+      - ACTIVATE_DEMO_PROJECT=False
+      - ACTIVATE_ADMIN_DASHBOARD=True
+      # Generate with: docker run -it --rm --entrypoint ihatemoney ihatemoney/ihatemoney:latest generate_password_hash
+      - ADMIN_PASSWORD=
+      - ALLOW_PUBLIC_PROJECT_CREATION=True
+      - BABEL_DEFAULT_TIMEZONE=America/Toronto
+      - SESSION_COOKIE_SECURE=True
+      - SHOW_ADMIN_EMAIL=True
+      # SQLite database
+      - SQLALCHEMY_DATABASE_URI=sqlite:////database/ihatemoney.db
+      - SQLALCHEMY_TRACK_MODIFICATIONS=False
+      - APPLICATION_ROOT=/
+      - ENABLE_CAPTCHA=False
+      - PORT=8000
+      # Generate with: openssl rand -base64 32
+      - SECRET_KEY=CHANGE_THIS_TO_A_RANDOM_SECRET_KEY
+      - MAIL_DEFAULT_SENDER=Budget manager <admin@example.com>
+    networks:
+      - thinknetwork
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ihatemoney.rule=Host(`ihatemoney.thinkcenter.dev`)"
+      - "traefik.http.routers.ihatemoney.entrypoints=websecure"
+      - "traefik.http.services.ihatemoney.loadbalancer.server.port=8000"
+
+  # Actual Budget (SQLite)
+  actual:
+    image: actualbudget/actual-server:latest
+    container_name: actual
+    restart: unless-stopped
+    volumes:
+      - ./actual-data:/data
+    environment:
+      - TZ=America/Toronto
+    networks:
+      - thinknetwork
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.actual.rule=Host(`actual.thinkcenter.dev`)"
+      - "traefik.http.routers.actual.entrypoints=websecure"
+      - "traefik.http.services.actual.loadbalancer.server.port=5006"
+
+  # Wallos (SQLite)
+  wallos:
+    image: bellamy/wallos:latest
+    container_name: wallos
+    restart: unless-stopped
+    volumes:
+      - ./wallos-db:/var/www/html/db
+      - ./wallos-logos:/var/www/html/images/uploads/logos
+    environment:
+      - TZ=America/Toronto
+    networks:
+      - thinknetwork
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wallos.rule=Host(`wallos.thinkcenter.dev`)"
+      - "traefik.http.routers.wallos.entrypoints=websecure"
+      - "traefik.http.services.wallos.loadbalancer.server.port=80"
+
+networks:
+  thinknetwork:
+    external: true

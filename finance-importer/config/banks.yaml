@@ -1,0 +1,100 @@
+# Bank CSV Format Configurations
+# Add your bank's format here to enable automatic detection
+
+banks:
+  desjardins:
+    name: Desjardins
+    country: CA
+    csv_format:
+      delimiter: ","
+      date_format: "%Y-%m-%d"
+      quote_char: '"'
+      columns:
+        - date
+        - description
+        - amount
+        - balance
+    column_mapping:
+      date: 0
+      description: 1
+      amount: 2
+      balance: 3
+
+  td_canada_trust:
+    name: TD Canada Trust
+    country: CA
+    csv_format:
+      delimiter: ","
+      date_format: "%m/%d/%Y"
+      columns:
+        - date
+        - description
+        - amount
+        - category
+    column_mapping:
+      date: 0
+      description: 1
+      amount: 2
+      category: 3
+
+  rbc:
+    name: RBC Royal Bank
+    country: CA
+    csv_format:
+      delimiter: ","
+      date_format: "%m/%d/%Y"
+      columns:
+        - date
+        - description
+        - amount
+        - type
+    column_mapping:
+      date: 1
+      description: 2
+      amount: 3
+      type: 4
+
+  scotiabank:
+    name: Scotiabank
+    country: CA
+    csv_format:
+      delimiter: ","
+      date_format: "%Y-%m-%d"
+      columns:
+        - date
+        - description
+        - amount
+    column_mapping:
+      date: 0
+      description: 1
+      amount: 2
+
+  bmo:
+    name: BMO Bank of Montreal
+    country: CA
+    csv_format:
+      delimiter: ","
+      date_format: "%m/%d/%Y"
+      columns:
+        - date
+        - description
+        - amount
+    column_mapping:
+      date: 0
+      description: 1
+      amount: 2
+
+  # Generic format for unknown banks
+  generic:
+    name: Generic CSV
+    csv_format:
+      delimiter: ","
+      date_format: "%Y-%m-%d"
+      columns:
+        - date
+        - description
+        - amount
+    column_mapping:
+      date: 0
+      description: 1
+      amount: 2
