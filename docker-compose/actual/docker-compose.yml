@@ -1,0 +1,18 @@
+services:
+  actual-server:
+    image: actualbudget/actual-server:latest
+    container_name: actual
+    restart: unless-stopped
+    ports:
+      - "5006:5006"
+    volumes:
+      - ./data:/data
+    environment:
+      - TZ=America/Toronto
+    networks:
+      - thinknetwork
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.actual.rule=Host(`actual.thinkcenter.dev`)"
+      - "traefik.http.routers.actual.entrypoints=websecure"
+      - "traefik.http.services.actual.loadbalancer.server.port=5006"

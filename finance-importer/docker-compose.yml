@@ -1,0 +1,34 @@
+services:
+  finance-importer:
+    build: .
+    container_name: finance-importer
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./storage:/app/storage
+      - ./config:/app/config
+    environment:
+      - TZ=America/Toronto
+      # Target app URLs
+      - ACTUAL_URL=http://actual.thinkcenter.dev
+      - FIREFLY_URL=http://firefly.thinkcenter.dev
+      - WALLOS_URL=http://wallos.thinkcenter.dev
+      - IHATEMONEY_URL=http://ihatemoney.thinkcenter.dev
+      # API Keys (set these in .env file)
+      - ACTUAL_TOKEN=${ACTUAL_TOKEN}
+      - FIREFLY_TOKEN=${FIREFLY_TOKEN}
+      - WALLOS_API_KEY=${WALLOS_API_KEY}
+      - IHATEMONEY_PROJECT_ID=${IHATEMONEY_PROJECT_ID}
+      - IHATEMONEY_TOKEN=${IHATEMONEY_TOKEN}
+    networks:
+      - thinknetwork
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.importer.rule=Host(`importer.thinkcenter.dev`)"
+      - "traefik.http.routers.importer.entrypoints=websecure"
+      - "traefik.http.services.importer.loadbalancer.server.port=8000"
+
+networks:
+  thinknetwork:
+    external: true
