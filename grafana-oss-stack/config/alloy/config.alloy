@@ -1,0 +1,127 @@
+// Grafana Alloy Configuration for LGTM Stack
+// Receives OTEL data and routes metrics to Prometheus, logs to Loki, traces to Tempo
+
+// ============================================
+// Logging Configuration
+// ============================================
+logging {
+  level  = "info"
+  format = "logfmt"
+}
+
+// ============================================
+// OTLP Receiver - Receives metrics, logs, traces
+// ============================================
+otelcol.receiver.otlp "default" {
+  output {
+    metrics = [
+      otelcol.processor.batch.default.input,
+    ]
+    logs    = [
+      otelcol.processor.batch.logs_input,
+    ]
+    traces  = [
+      otelcol.processor.batch.traces_input,
+    ]
+  }
+
+  grpc {
+    endpoint = "0.0.0.0:4317"
+  }
+
+  http {
+    endpoint = "0.0.0.0:4318"
+  }
+}
+
+// ============================================
+// Batch Processors
+// ============================================
+otelcol.processor.batch "default" {
+  output {
+    metrics = [
+      prometheus.remote_write.default.receiver,
+    ]
+  }
+  timeout        = "200ms"
+  send_batch_size = 10000
+}
+
+otelcol.processor.batch "logs_input" {
+  output {
+    logs = [
+      otelcol.exporter.loki.default.input,
+    ]
+  }
+  timeout        = "5s"
+  send_batch_size = 10000
+}
+
+otelcol.processor.batch "traces_input" {
+  output {
+    traces = [
+      otelcol.exporter.otlp.tempo.input,
+    ]
+  }
+  timeout        = "5s"
+  send_batch_size = 50000
+}
+
+// ============================================
+// Prometheus Remote Write - Metrics
+// ============================================
+prometheus.remote_write "default" {
+  endpoint {
+    url = "http://prometheus:9090/api/v1/write"
+  }
+
+  external_labels {
+    cluster = "homelab"
+    env     = "production"
+  }
+}
+
+// ============================================
+// Loki Exporter - Logs
+// ============================================
+otelcol.exporter.loki "default" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+
+  labels {
+    label {
+      name = "cluster"
+      value = "homelab"
+    }
+  }
+
+  format = "json"
+}
+
+// ============================================
+// OTLP Exporter - Traces to Tempo
+// ============================================
+otelcol.exporter.otlp "tempo" {
+  endpoint = "tempo:4317"
+
+  tls {
+    insecure = true
+  }
+}
+
+// ============================================
+// Optional: Docker Metrics Collection
+// ============================================
+// Uncomment to enable Docker container stats collection
+/*
+discovery.docker "local" {
+  host = "unix:///var/run/docker.sock"
+}
+
+prometheus.scrape "docker" {
+  targets    = discovery.docker.local.targets
+  forward_to = [prometheus.remote_write.default.receiver]
+  job_name   = "docker"
+}
+*/

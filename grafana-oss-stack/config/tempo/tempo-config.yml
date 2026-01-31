@@ -1,0 +1,41 @@
+server:
+  http_listen_port: 3200
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+
+storage:
+  trace:
+    backend: local
+    local:
+      path: /tempo/traces
+    wal:
+      path: /tempo/wal
+
+compactor:
+  compaction:
+    block_size: 1h
+    compacted_block_size: 4h
+    compaction_window: 24h
+    max_block_bytes: 100000000
+    max_block_duration: 48h
+
+  retention:
+    enabled: true
+   Forever: true
+
+metrics_generator:
+  processor:
+    service_graphs:
+      dimensions: []
+    span_metrics:
+      dimensions: [http.method, http.status_code, http.target]
+  remote_write:
+    - url: http://prometheus:9090/api/v1/write
+      send: true
