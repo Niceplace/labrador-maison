@@ -2,7 +2,7 @@ version: '3'
 
 services:
   concourse-db:
-    image: postgres:14-bullseye
+    image: postgres:14-bullseye@sha256:230c8fb46b449f08ba70dd5b4d28df778e162ccc467d35500d50ae2e785da07b
     restart: unless-stopped
     environment:
       POSTGRES_DB: concourse
@@ -23,7 +23,7 @@ services:
     # https://concourse-ci.org/postgresql-node.html#db-resource-utilization
 
   concourse-web:
-    image: concourse/concourse:7.7.0
+    image: concourse/concourse:7.14.3@sha256:ff7ee75c781c2e073296b915f0612f4bda8d9267ded13678b6d6217b1f7b4369
     restart: unless-stopped
     command: web
     labels:
@@ -71,7 +71,7 @@ services:
     # https://concourse-ci.org/concourse-web.html#web-resource-utilization
 
   concourse-worker:
-    image: concourse/concourse:7.7.0
+    image: concourse/concourse:7.14.3@sha256:ff7ee75c781c2e073296b915f0612f4bda8d9267ded13678b6d6217b1f7b4369
     restart: unless-stopped
     command: worker
     stop_signal: SIGUSR2

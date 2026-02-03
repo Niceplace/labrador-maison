@@ -1,0 +1,135 @@
+# Category and Payee Mappings
+# Customize these mappings for your spending habits
+
+# Category mappings from bank categories to app-specific categories
+categories:
+  firefly-iii:
+    "GROCERY STORES": "Food: Groceries"
+    "RESTAURANTS": "Food: Dining Out"
+    "FOOD SERVICE": "Food: Dining Out"
+    "GAS STATIONS": "Transportation: Fuel"
+    "FUEL": "Transportation: Fuel"
+    "UTILITIES": "Bills: Utilities"
+    "ELECTRIC": "Bills: Electricity"
+    "WATER": "Bills: Water"
+    "INTERNET": "Bills: Internet"
+    "PHONE": "Bills: Phone"
+    "INSURANCE": "Bills: Insurance"
+    "RENT": "Housing: Rent"
+    "MORTGAGE": "Housing: Mortgage"
+    "PHARMACY": "Health: Pharmacy"
+    "MEDICAL": "Health: Medical"
+    "DOCTOR": "Health: Medical"
+    "ENTERTAINMENT": "Entertainment"
+    "STREAMING": "Entertainment: Streaming"
+    "SUBSCRIPTION": "Subscriptions"
+
+  actual:
+    "GROCERY STORES": "Food/Groceries"
+    "RESTAURANTS": "Food/Dining Out"
+    "FOOD SERVICE": "Food/Dining Out"
+    "GAS STATIONS": "Transportation/Fuel"
+    "FUEL": "Transportation/Fuel"
+    "UTILITIES": "Bills/Utilities"
+    "ELECTRIC": "Bills/Electricity"
+    "WATER": "Bills/Water"
+    "INTERNET": "Bills/Internet"
+    "PHONE": "Bills/Phone"
+    "INSURANCE": "Bills/Insurance"
+    "RENT": "Housing/Rent"
+    "MORTGAGE": "Housing/Mortgage"
+    "PHARMACY": "Health/Pharmacy"
+    "MEDICAL": "Health/Medical"
+    "DOCTOR": "Health/Medical"
+    "ENTERTAINMENT": "Entertainment"
+    "STREAMING": "Entertainment/Streaming"
+    "SUBSCRIPTION": "Subscriptions"
+
+# Normalize payee names (original: normalized)
+payees:
+  "AMAZON": "Amazon"
+  "AMAZON WEB SERVICES": "AWS"
+  "AMZN": "Amazon"
+  "NO FRILLS": "No Frills"
+  "NOFRILLS": "No Frills"
+  "LOBLAWS": "Loblaws"
+  "SUPERSTORE": "Real Canadian Superstore"
+  "SHELL CANADA": "Shell"
+  "SHELL": "Shell"
+  "ESSO": "Esso"
+  "COSTCO": "Costco"
+  "COSTCO WHSE": "Costco"
+  "WALMART": "Walmart"
+  "WMT": "Walmart"
+  "TIM HORTONS": "Tim Hortons"
+  "TIM HORTON": "Tim Hortons"
+  "STARBUCKS": "Starbucks"
+  "NETFLIX": "Netflix"
+  "SPOTIFY": "Spotify"
+  "APPLE.COM": "Apple"
+  "APPLE SERVICES": "Apple"
+  "GOOGLE": "Google"
+  "GOOG": "Google"
+
+# Subscription detection patterns
+# Matches will be auto-categorized as subscriptions
+subscriptions:
+  - pattern: "(?i)^amazon(?!.*prime)"
+    name: "Amazon"
+    category: "Shopping"
+    cycle: monthly
+
+  - pattern: "(?i)amazon.*prime"
+    name: "Amazon Prime"
+    category: "Entertainment"
+    cycle: yearly
+
+  - pattern: "(?i)netflix"
+    name: "Netflix"
+    category: "Entertainment: Streaming"
+    cycle: monthly
+
+  - pattern: "(?i)spotify"
+    name: "Spotify"
+    category: "Entertainment: Music"
+    cycle: monthly
+
+  - pattern: "(?i)youtube.*premium"
+    name: "YouTube Premium"
+    category: "Entertainment: Streaming"
+    cycle: monthly
+
+  - pattern: "(?i)apple.*icloud"
+    name: "iCloud"
+    category: "Technology"
+    cycle: monthly
+
+  - pattern: "(?i)google.*storage|google.*one"
+    name: "Google One"
+    category: "Technology"
+    cycle: monthly
+
+  - pattern: "(?i)adobe"
+    name: "Adobe"
+    category: "Software"
+    cycle: monthly
+
+  - pattern: "(?i)microsoft.*365"
+    name: "Microsoft 365"
+    category: "Software"
+    cycle: yearly
+
+  - pattern: "(?i)insurance"
+    name: "Insurance"
+    category: "Bills: Insurance"
+    cycle: monthly
+
+  - pattern: "(?i)internet|isp|fibernet|rogers.*internet|bell.*internet"
+    name: "Internet"
+    category: "Bills: Internet"
+    cycle: monthly
+
+  - pattern: "(?i)phone|mobile|wireless|rogers.*mobile|bell.*mobility"
+    name: "Mobile Phone"
+    category: "Bills: Phone"
+    cycle: monthly

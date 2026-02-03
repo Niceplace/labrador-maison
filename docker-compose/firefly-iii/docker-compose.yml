@@ -1,0 +1,36 @@
+services:
+  app:
+    image: fireflyiii/core:latest
+    container_name: firefly-iii
+    restart: unless-stopped
+    volumes:
+      - ./upload:/var/www/html/storage/upload
+    env_file:
+      - .env
+    networks:
+      - thinknetwork
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.firefly.rule=Host(`firefly.thinkcenter.dev`)"
+      - "traefik.http.routers.firefly.entrypoints=websecure"
+      - "traefik.http.services.firefly.loadbalancer.server.port=8080"
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:lts
+    container_name: firefly-db
+    restart: unless-stopped
+    volumes:
+      - ./db:/var/lib/mysql
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+      - MYSQL_USER=firefly
+      - MYSQL_PASSWORD=firefly_password
+      - MYSQL_DATABASE=firefly
+    networks:
+      - thinknetwork
+
+networks:
+  thinknetwork:
+    external: true
