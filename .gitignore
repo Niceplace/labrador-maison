@@ -7,3 +7,10 @@ reverse-proxy-traefik/logs/*.log
 
 # Ignore pipeline helper scripts since they might contain secrets
 concourse-ci/scripts/
+
+# Komodo secrets and data
+komodo/compose.env
+komodo/data/
+
+# Registry secrets
+container-registry/.env
