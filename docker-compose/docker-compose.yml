@@ -3,7 +3,7 @@
 services:
   # Firefly III (SQLite)
   firefly-iii:
-    image: fireflyiii/core:latest
+    image: fireflyiii/core:latest@sha256:db1f8eb2203a1d13af0bff1992b0c6b0304c8462074b552eced355e2329ed9f6
     container_name: firefly-iii
     restart: unless-stopped
     volumes:
@@ -24,7 +24,7 @@ services:
 
   # IHateMoney (SQLite)
   ihatemoney:
-    image: ihatemoney/ihatemoney:latest
+    image: ihatemoney/ihatemoney:latest@sha256:5ff0b55411f5abb98539f571af56059608dff64f0dab8509f9ebddd8aacce4bd
     container_name: ihatemoney
     restart: unless-stopped
     volumes:
@@ -58,7 +58,7 @@ services:
 
   # Actual Budget (SQLite)
   actual:
-    image: actualbudget/actual-server:latest
+    image: actualbudget/actual-server:latest@sha256:c34346f87725b9cce5dca5af1a2a9b989127d592cc4c6af5cf4652d4a86def90
     container_name: actual
     restart: unless-stopped
     volumes:
@@ -75,7 +75,7 @@ services:
 
   # Wallos (SQLite)
   wallos:
-    image: bellamy/wallos:latest
+    image: bellamy/wallos:latest@sha256:9f1bbd7f24e2afdac64ff0985ef801d48f63086540a0844fc05727642bb5360a
     container_name: wallos
     restart: unless-stopped
     volumes:

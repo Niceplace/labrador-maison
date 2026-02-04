@@ -1,6 +1,6 @@
 services:
   actual-server:
-    image: actualbudget/actual-server:latest
+    image: actualbudget/actual-server:latest@sha256:c34346f87725b9cce5dca5af1a2a9b989127d592cc4c6af5cf4652d4a86def90
     container_name: actual
     restart: unless-stopped
     ports:

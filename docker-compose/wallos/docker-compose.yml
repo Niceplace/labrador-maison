@@ -1,6 +1,6 @@
 services:
   wallos:
-    image: bellamy/wallos:latest
+    image: bellamy/wallos:latest@sha256:9f1bbd7f24e2afdac64ff0985ef801d48f63086540a0844fc05727642bb5360a
     container_name: wallos
     restart: unless-stopped
     volumes:

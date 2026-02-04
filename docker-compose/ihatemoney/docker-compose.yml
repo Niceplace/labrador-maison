@@ -1,6 +1,6 @@
 services:
   ihatemoney:
-    image: ihatemoney/ihatemoney:latest
+    image: ihatemoney/ihatemoney:latest@sha256:5ff0b55411f5abb98539f571af56059608dff64f0dab8509f9ebddd8aacce4bd
     container_name: ihatemoney
     restart: unless-stopped
     volumes:
