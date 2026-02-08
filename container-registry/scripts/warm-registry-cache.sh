@@ -51,7 +51,7 @@ while true; do
     if [[ $((current_time - last_check)) -ge $((POLL_INTERVAL_MINUTES * 60)) ]]; then
         # Fetch merged Renovate PRs from last 24 hours
         since_date=$(date -u -d "24 hours ago" +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || \
-                     date -u -v-24H +"%Y-%m-%dT%H:%M:%SZ")
+                     date -u -d "@$(($(date +%s) - 86400))" +"%Y-%m-%dT%H:%M:%SZ")
 
         log_info "Fetching merged Renovate PRs since ${since_date}"
 
@@ -63,19 +63,19 @@ while true; do
         # Extract merged Renovate PRs
         merged_prs=$(echo "$prs_json" | jq -r "
             [.[] | select(.merged_at != null) | select(.merged_at >= \"${since_date}\") |
-            select(.user.login == \"renovate[bot]\" or .title | contains(\"Renovate\"))]
+            select((.user.login == \"renovate[bot]\") or (.title // \"\" | test(\"Renovate\"; \"i\")))]
         ")
 
         pr_count=$(echo "$merged_prs" | jq -s 'length')
+
+        # Extract and cache images
+        declare -A images
 
         if [[ "$pr_count" -gt 0 ]]; then
             log_info "Found ${pr_count} merged Renovate PR(s)"
 
             # Get unique commit SHAs
             commit_shas=$(echo "$merged_prs" | jq -r '.[].merge_commit_sha' | sort -u)
-
-            # Extract and cache images
-            declare -A images
 
             for sha in $commit_shas; do
                 log_info "Checking commit ${sha:0:7}"
@@ -94,12 +94,11 @@ while true; do
 
                         if [[ -n "$file_content" ]]; then
                             while IFS= read -r line; do
-                                if [[ "$line" =~ image:[[:space:]]*['\"]?([^'\"[:space:]]+) ]]; then
-                                    img="${BASH_REMATCH[1]}"
-                                    img="${img%%@*}"
-                                    if [[ ! "$img" =~ ^(localhost|127\.0\.0\.1|\.) ]] && [[ -n "$img" ]]; then
-                                        images["$img"]=1
-                                    fi
+                                # Extract image name using grep for better compatibility
+                                img=$(echo "$line" | grep -oP 'image:\s*\K[^\s"@]+' || echo "")
+                                img="${img%%@*}"
+                                if [[ -n "$img" ]] && [[ ! "$img" =~ ^(localhost|127\.0\.0\.1|\.) ]]; then
+                                    images["$img"]=1
                                 fi
                             done <<< "$file_content"
                         fi
@@ -108,7 +107,9 @@ while true; do
             done
 
             # Cache unique images
+            set +u  # Temporarily disable nounset for array check
             if [[ ${#images[@]} -gt 0 ]]; then
+                set -u  # Re-enable nounset
                 log_info "Images to cache: ${#images[@]}"
 
                 for img in "${!images[@]}"; do
@@ -120,6 +121,7 @@ while true; do
                     fi
                 done
             fi
+            set -u  # Re-enable nounset after array check
         else
             log_info "No recent Renovate PRs found"
         fi
