@@ -3,22 +3,22 @@
 CURRENT_DIR=$(pwd)
 COMMON_NAME="*.thinkcenter.dev"
 
-KEY_PATH="/root/ca/intermediate/private/${COMMON_NAME}.key.pem"
-CERT_SIGNING_REQUEST_PATH="/root/ca/intermediate/csr/${COMMON_NAME}csr.pem"
-CERT_PATH="/root/ca/intermediate/certs/${COMMON_NAME}.cert.pem"
+KEY_PATH="/root/ca/intermediate/private/wildcard.key.pem"
+CERT_SIGNING_REQUEST_PATH="/root/ca/intermediate/csr/wildcard.csr.pem"
+CERT_PATH="/root/ca/intermediate/certs/wildcard.cert.pem"
 
 CNF_PATH="/root/ca/intermediate/openssl.cnf"
 CA_CHAIN_PATH="/root/ca/intermediate/certs/ca-chain.cert.pem"
 
-CERT_OUT="$2/${COMMON_NAME}.client.pem"
+CERT_OUT="$1/wildcard.client.pem"
 
 
 cd /root/ca
 # Generate key
 openssl genrsa -out "$KEY_PATH" 2048
 echo "Generated key in $KEY_PATH"
-cp -rf "$CA_CHAIN_PATH" "$2"
-echo "Copied the chain into the destination directory $2"
+cp -rf "$CA_CHAIN_PATH" "$1"
+echo "Copied the chain into the destination directory $1"
 
 # Generate certificate signing request
 openssl req -config "$CNF_PATH" \
