@@ -1,6 +1,6 @@
 services:
   ihatemoney:
-    image: ihatemoney/ihatemoney:latest@sha256:5ff0b55411f5abb98539f571af56059608dff64f0dab8509f9ebddd8aacce4bd
+    image: ihatemoney/ihatemoney@sha256:5ff0b55411f5abb98539f571af56059608dff64f0dab8509f9ebddd8aacce4bd
     container_name: ihatemoney
     restart: unless-stopped
     volumes:
@@ -9,8 +9,6 @@ services:
       - DEBUG=False
       - ACTIVATE_DEMO_PROJECT=False
       - ACTIVATE_ADMIN_DASHBOARD=True
-      # Generate admin password with: docker run -it --rm --entrypoint ihatemoney ihatemoney/ihatemoney:latest generate_password_hash
-      # Replace every $ with $$ in the generated hash
       - ADMIN_PASSWORD=
       - ALLOW_PUBLIC_PROJECT_CREATION=True
       - BABEL_DEFAULT_TIMEZONE=America/Toronto
@@ -23,17 +21,15 @@ services:
       - PORT=8000
       - PUID=1000
       - PGID=1000
-      # Generate a SECRET_KEY with: openssl rand -base64 32
       - SECRET_KEY=CHANGE_THIS_TO_A_RANDOM_SECRET_KEY
       - MAIL_DEFAULT_SENDER=Budget manager <admin@example.com>
     networks:
       - thinknetwork
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.ihatemoney.rule=Host(`ihatemoney.thinkcenter.dev`)"
-      - "traefik.http.routers.ihatemoney.entrypoints=websecure"
-      - "traefik.http.services.ihatemoney.loadbalancer.server.port=8000"
-
+      - traefik.enable=true
+      - traefik.http.routers.ihatemoney.rule=Host(`ihatemoney.thinkcenter.dev`)
+      - traefik.http.routers.ihatemoney.entrypoints=websecure
+      - traefik.http.services.ihatemoney.loadbalancer.server.port=8000
 networks:
   thinknetwork:
     external: true

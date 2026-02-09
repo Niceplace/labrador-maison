@@ -1,6 +1,42 @@
 ## DYNAMIC CONFIG
 tls:
    certificates:
+     # Grafana Stack
+     - certFile: /certs/grafana.thinkcenter.dev
+       keyFile: /certs/grafana.thinkcenter.dev.key.pem
+       stores:
+         - default
+     - certFile: /certs/prometheus.thinkcenter.dev
+       keyFile: /certs/prometheus.thinkcenter.dev.key.pem
+       stores:
+         - default
+     - certFile: /certs/loki.thinkcenter.dev
+       keyFile: /certs/loki.thinkcenter.dev.key.pem
+       stores:
+         - default
+     - certFile: /certs/alloy-otlp.thinkcenter.dev
+       keyFile: /certs/alloy-otlp.thinkcenter.dev.key.pem
+       stores:
+         - default
+     - certFile: /certs/tempo.thinkcenter.dev
+       keyFile: /certs/tempo.thinkcenter.dev.key.pem
+       stores:
+         - default
+     # Registry
+     - certFile: /certs/registry.thinkcenter.dev.cert.pem
+       keyFile: /certs/registry.thinkcenter.dev.key.pem
+       stores:
+         - default
+     - certFile: /certs/registry-ui.thinkcenter.dev
+       keyFile: /certs/registry-ui.thinkcenter.dev.key.pem
+       stores:
+         - default
+     # Other services
+     - certFile: /certs/komodo.thinkcenter.dev
+       keyFile: /certs/komodo.thinkcenter.dev.key.pem
+       stores:
+         - default
+     # Default fallback
      - certFile: /certs/thinkcenter.dev.cert.pem
        keyFile: /certs/thinkcenter.dev.key.pem
        stores:
@@ -12,4 +48,4 @@ tls:
          keyFile: /certs/thinkcenter.dev.key.pem
    options:
      default:
-        sniStrict: true
+        sniStrict: false

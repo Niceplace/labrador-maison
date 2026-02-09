@@ -1,6 +1,6 @@
 services:
   wallos:
-    image: bellamy/wallos:latest@sha256:9f1bbd7f24e2afdac64ff0985ef801d48f63086540a0844fc05727642bb5360a
+    image: bellamy/wallos@sha256:9f1bbd7f24e2afdac64ff0985ef801d48f63086540a0844fc05727642bb5360a
     container_name: wallos
     restart: unless-stopped
     volumes:
@@ -11,11 +11,10 @@ services:
     networks:
       - thinknetwork
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.wallos.rule=Host(`wallos.thinkcenter.dev`)"
-      - "traefik.http.routers.wallos.entrypoints=websecure"
-      - "traefik.http.services.wallos.loadbalancer.server.port=80"
-
+      - traefik.enable=true
+      - traefik.http.routers.wallos.rule=Host(`wallos.thinkcenter.dev`)
+      - traefik.http.routers.wallos.entrypoints=websecure
+      - traefik.http.services.wallos.loadbalancer.server.port=80
 networks:
   thinknetwork:
     external: true

@@ -1,6 +1,6 @@
 services:
   app:
-    image: fireflyiii/core:latest@sha256:db1f8eb2203a1d13af0bff1992b0c6b0304c8462074b552eced355e2329ed9f6
+    image: fireflyiii/core@sha256:a1f65bf8d1ddb3c6684ab720439b48554eae6ef85c768076b7f495189efc716e
     container_name: firefly-iii
     restart: unless-stopped
     volumes:
@@ -10,15 +10,14 @@ services:
     networks:
       - thinknetwork
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.firefly.rule=Host(`firefly.thinkcenter.dev`)"
-      - "traefik.http.routers.firefly.entrypoints=websecure"
-      - "traefik.http.services.firefly.loadbalancer.server.port=8080"
+      - traefik.enable=true
+      - traefik.http.routers.firefly.rule=Host(`firefly.thinkcenter.dev`)
+      - traefik.http.routers.firefly.entrypoints=websecure
+      - traefik.http.services.firefly.loadbalancer.server.port=8080
     depends_on:
       - db
-
   db:
-    image: mariadb:lts@sha256:345fa26d595e8c7fe298e0c4098ed400356f502458769c8902229b3437d6da2b
+    image: mariadb@sha256:345fa26d595e8c7fe298e0c4098ed400356f502458769c8902229b3437d6da2b
     container_name: firefly-db
     restart: unless-stopped
     volumes:
@@ -30,7 +29,6 @@ services:
       - MYSQL_DATABASE=firefly
     networks:
       - thinknetwork
-
 networks:
   thinknetwork:
     external: true

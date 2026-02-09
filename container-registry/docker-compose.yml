@@ -1,16 +1,18 @@
-version: "3"
 services:
   container-registry:
     container_name: registry
-    image: registry:2.8@sha256:a3d8aaa63ed8681a604f1dea0aa03f100d5895b6a58ace528858a7b332415373
+    image: registry@sha256:a3d8aaa63ed8681a604f1dea0aa03f100d5895b6a58ace528858a7b332415373
     restart: unless-stopped
+    ports:
+      - "127.0.0.1:5000:5000"
     environment:
       - "REGISTRY_LOG_LEVEL=debug"
       - "REGISTRY_HTTP_ADDR=0.0.0.0:5000"
       - "REGISTRY_HTTP_HOST=https://registry.thinkcenter.dev"
       - "REGISTRY_HTTP_HEADERS_Access-Control-Allow-Origin=['*']"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - ./config.yml:/etc/docker/registry/config.yml:ro
+      - registry-data:/var/lib/registry
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.container-registry.rule=Host(`registry.thinkcenter.dev`)"
@@ -19,11 +21,12 @@ services:
       - "traefik.http.services.container-registry.loadbalancer.server.port=5000"
     networks:
       - default
+
   container-registry-ui:
-    image: joxit/docker-registry-ui:2.2.1-debian@sha256:19f4952324554f595e7f5dadd63fc94fd06245cc4a6e9d6afea2dd1c77f25c09
+    image: joxit/docker-registry-ui@sha256:bb5956a6b378706f1c3a92c947d0a0c606e280460cd9e37c0198caf46399c839
     restart: unless-stopped
     environment:
-      - "NGINX_PROXY_PASS_URL=http://registry:5000" # Nginx can directly talk to the container, config that is not NGINX should be assumed to act client side
+      - "NGINX_PROXY_PASS_URL=http://registry:5000"
       - "REGISTRY_TITLE=Thinkcenter docker registry"
       - "DELETE_IMAGES=true"
       - "SHOW_CONTENT_DIGEST=true"
@@ -37,7 +40,38 @@ services:
       - "traefik.http.routers.container-registry-ui.entrypoints=websecure"
       - "traefik.http.routers.container-registry-ui.tls=true"
 
+  # Cache warmer - polls GitHub for Renovate PRs and pre-caches images
+  registry-cache-warmer:
+    container_name: registry-cache-warmer
+    image: alpine@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659
+    restart: unless-stopped
+    command:
+      - /bin/sh
+      - -c
+      - |
+        apk add --no-cache docker-cli jq curl bash ca-certificates &&
+        while ! docker info >/dev/null 2>&1; do sleep 2; done &&
+        chmod +x /scripts/warm-registry-cache.sh &&
+        /scripts/warm-registry-cache.sh
+    volumes:
+      - ./scripts:/scripts
+      - registry-cache-state:/tmp/registry-cache
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - "GITHUB_REPO=Niceplace/labrador-maison"
+      - "GITHUB_TOKEN=${GITHUB_TOKEN}"
+      - "REGISTRY_URL=registry.thinkcenter.dev"
+      - "POLL_INTERVAL_MINUTES=15"
+    networks:
+      - default
+
 networks:
   default:
     external: true
     name: thinknetwork
+
+volumes:
+  registry-data:
+    driver: local
+  registry-cache-state:
+    driver: local

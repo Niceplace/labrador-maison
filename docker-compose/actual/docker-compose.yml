@@ -1,6 +1,6 @@
 services:
   actual-server:
-    image: actualbudget/actual-server:latest@sha256:c34346f87725b9cce5dca5af1a2a9b989127d592cc4c6af5cf4652d4a86def90
+    image: actualbudget/actual-server@sha256:c34346f87725b9cce5dca5af1a2a9b989127d592cc4c6af5cf4652d4a86def90
     container_name: actual
     restart: unless-stopped
     ports:
@@ -12,7 +12,7 @@ services:
     networks:
       - thinknetwork
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.actual.rule=Host(`actual.thinkcenter.dev`)"
-      - "traefik.http.routers.actual.entrypoints=websecure"
-      - "traefik.http.services.actual.loadbalancer.server.port=5006"
+      - traefik.enable=true
+      - traefik.http.routers.actual.rule=Host(`actual.thinkcenter.dev`)
+      - traefik.http.routers.actual.entrypoints=websecure
+      - traefik.http.services.actual.loadbalancer.server.port=5006
