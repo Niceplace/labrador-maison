@@ -41,3 +41,9 @@ scrape_configs:
   - job_name: 'traefik'
     static_configs:
       - targets: ['reverse-proxy:8080']
+
+  # Docker Registry metrics
+  - job_name: 'registry'
+    static_configs:
+      - targets: ['registry:5000']
+    metrics_path: /metrics

@@ -3,9 +3,9 @@
 CURRENT_DIR=$(pwd)
 COMMON_NAME="*.thinkcenter.dev"
 
-KEY_PATH="/root/ca/intermediate/private/wildcard.key.pem"
-CERT_SIGNING_REQUEST_PATH="/root/ca/intermediate/csr/wildcard.csr.pem"
-CERT_PATH="/root/ca/intermediate/certs/wildcard.cert.pem"
+KEY_PATH="/root/ca/intermediate/private/wildcard.client.key.pem"
+CERT_SIGNING_REQUEST_PATH="/root/ca/intermediate/csr/wildcard.client.csr.pem"
+CERT_PATH="/root/ca/intermediate/certs/wildcard.client.cert.pem"
 
 CNF_PATH="/root/ca/intermediate/openssl.cnf"
 CA_CHAIN_PATH="/root/ca/intermediate/certs/ca-chain.cert.pem"
@@ -36,6 +36,7 @@ openssl ca -config "$CNF_PATH" \
        	-days 375 \
        	-notext \
 	-md sha256 \
+	-unique_serial \
        	-in "${CERT_SIGNING_REQUEST_PATH}" \
        	-out "$CERT_OUT"
 

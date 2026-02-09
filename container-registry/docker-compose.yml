@@ -1,9 +1,10 @@
-version: "3"
 services:
   container-registry:
     container_name: registry
-    image: registry@sha256:3e19f6a6b62b71360c931ee88d1a13a966e1104eb17f589e260c85a8bcd2999e
+    image: registry@sha256:a3d8aaa63ed8681a604f1dea0aa03f100d5895b6a58ace528858a7b332415373
     restart: unless-stopped
+    ports:
+      - "127.0.0.1:5000:5000"
     environment:
       - "REGISTRY_LOG_LEVEL=debug"
       - "REGISTRY_HTTP_ADDR=0.0.0.0:5000"
@@ -22,7 +23,7 @@ services:
       - default
 
   container-registry-ui:
-    image: joxit/docker-registry-ui@sha256:7a28e3e8240453b15cfb3325964fc07550e6f7c88e70d8c26a3a7439ad35fb02
+    image: joxit/docker-registry-ui@sha256:bb5956a6b378706f1c3a92c947d0a0c606e280460cd9e37c0198caf46399c839
     restart: unless-stopped
     environment:
       - "NGINX_PROXY_PASS_URL=http://registry:5000"
@@ -42,7 +43,7 @@ services:
   # Cache warmer - polls GitHub for Renovate PRs and pre-caches images
   registry-cache-warmer:
     container_name: registry-cache-warmer
-    image: alpine@sha256:51bb6d5567df7b5d8bae0c34442d6eeaea99cfc2f7ce0894e20a309f9c27a9b5
+    image: alpine@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659
     restart: unless-stopped
     command:
       - /bin/sh
@@ -53,7 +54,7 @@ services:
         chmod +x /scripts/warm-registry-cache.sh &&
         /scripts/warm-registry-cache.sh
     volumes:
-      - ./scripts:/scripts:ro
+      - ./scripts:/scripts
       - registry-cache-state:/tmp/registry-cache
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
