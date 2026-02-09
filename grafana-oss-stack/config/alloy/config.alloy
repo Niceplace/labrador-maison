@@ -1,5 +1,5 @@
 // Grafana Alloy Configuration for LGTM Stack
-// Receives OTEL data and routes metrics to Prometheus, logs to Loki, traces to Tempo
+// Receives OTEL data and routes logs to Loki, traces to Tempo
 
 // ============================================
 // Logging Configuration
@@ -10,19 +10,12 @@ logging {
 }
 
 // ============================================
-// OTLP Receiver - Receives metrics, logs, traces
+// OTLP Receiver - Receives logs, traces
 // ============================================
 otelcol.receiver.otlp "default" {
   output {
-    metrics = [
-      otelcol.processor.batch.default.input,
-    ]
-    logs    = [
-      otelcol.processor.batch.logs_input,
-    ]
-    traces  = [
-      otelcol.processor.batch.traces_input,
-    ]
+    logs   = [otelcol.processor.batch.logs.input]
+    traces = [otelcol.processor.batch.traces.input]
   }
 
   grpc {
@@ -35,86 +28,62 @@ otelcol.receiver.otlp "default" {
 }
 
 // ============================================
-// Batch Processors
+// Batch Processors for Logs and Traces
 // ============================================
-otelcol.processor.batch "default" {
+otelcol.processor.batch "logs" {
   output {
-    metrics = [
-      prometheus.remote_write.default.receiver,
-    ]
+    logs = [otelcol.exporter.loki.default.input]
   }
-  timeout        = "200ms"
-  send_batch_size = 10000
+  timeout = "5s"
 }
 
-otelcol.processor.batch "logs_input" {
+otelcol.processor.batch "traces" {
   output {
-    logs = [
-      otelcol.exporter.loki.default.input,
-    ]
+    traces = [otelcol.exporter.otlp.tempo.input]
   }
-  timeout        = "5s"
-  send_batch_size = 10000
-}
-
-otelcol.processor.batch "traces_input" {
-  output {
-    traces = [
-      otelcol.exporter.otlp.tempo.input,
-    ]
-  }
-  timeout        = "5s"
-  send_batch_size = 50000
-}
-
-// ============================================
-// Prometheus Remote Write - Metrics
-// ============================================
-prometheus.remote_write "default" {
-  endpoint {
-    url = "http://prometheus:9090/api/v1/write"
-  }
-
-  external_labels {
-    cluster = "homelab"
-    env     = "production"
-  }
+  timeout = "5s"
 }
 
 // ============================================
 // Loki Exporter - Logs
 // ============================================
 otelcol.exporter.loki "default" {
+  forward_to = [loki.write.grafana_oss_stack.receiver]
+}
+
+// ============================================
+// Loki Write - Logs
+// ============================================
+loki.write "grafana_oss_stack" {
   endpoint {
     url = "http://loki:3100/loki/api/v1/push"
   }
-
-  labels {
-    label {
-      name = "cluster"
-      value = "homelab"
-    }
-  }
-
-  format = "json"
 }
 
 // ============================================
 // OTLP Exporter - Traces to Tempo
 // ============================================
 otelcol.exporter.otlp "tempo" {
-  endpoint = "tempo:4317"
-
-  tls {
-    insecure = true
+  client {
+    endpoint = "tempo:4317"
+    tls {
+      insecure = true
+    }
   }
 }
 
 // ============================================
-// Optional: Docker Metrics Collection
+// Prometheus Remote Write - For scrape metrics
 // ============================================
-// Uncomment to enable Docker container stats collection
-/*
+prometheus.remote_write "default" {
+  endpoint {
+    url = "http://prometheus:9090/api/v1/write"
+  }
+}
+
+// ============================================
+// Docker Metrics Collection
+// ============================================
 discovery.docker "local" {
   host = "unix:///var/run/docker.sock"
 }
@@ -124,4 +93,3 @@ prometheus.scrape "docker" {
   forward_to = [prometheus.remote_write.default.receiver]
   job_name   = "docker"
 }
-*/
