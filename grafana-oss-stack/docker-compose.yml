@@ -126,8 +126,6 @@ services:
       - /var/lib/docker/:/var/lib/docker:ro
       # Disk stats for I/O metrics
       - /dev/disk/:/dev/disk:ro
-    ports:
-      - "8080:8080"
     labels:
       - traefik.enable=true
       - traefik.docker.network=thinknetwork
