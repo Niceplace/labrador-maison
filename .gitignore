@@ -9,7 +9,7 @@ reverse-proxy-traefik/logs/*.log
 concourse-ci/scripts/
 
 # Komodo secrets and data
-komodo/compose.env
+komodo/.env
 komodo/data/
 
 # Registry secrets
