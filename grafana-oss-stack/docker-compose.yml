@@ -107,6 +107,36 @@ services:
       - prometheus
       - loki
       - tempo
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor@sha256:78ae90d60432609208a2db1b446a6f64da60b433cacd5dff2cd2e44eba280653
+    container_name: cadvisor
+    restart: unless-stopped
+    privileged: true
+    devices:
+      # Kernel log buffer for container event tracking
+      - /dev/kmsg:/dev/kmsg
+    volumes:
+      # Root filesystem for host-level metrics (CPU, memory, network)
+      - /:/rootfs:ro
+      # Docker socket for container discovery and stats
+      - /var/run:/var/run:ro
+      # Sysfs for CPU, memory, and kernel metrics
+      - /sys:/sys:ro
+      # Docker data directory for container filesystem stats
+      - /var/lib/docker/:/var/lib/docker:ro
+      # Disk stats for I/O metrics
+      - /dev/disk/:/dev/disk:ro
+    ports:
+      - "8080:8080"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=thinknetwork
+      - traefik.http.routers.cadvisor.rule=Host(`cadvisor.thinkcenter.dev`)
+      - traefik.http.routers.cadvisor.entrypoints=websecure
+      - traefik.http.routers.cadvisor.tls=true
+      - traefik.http.services.cadvisor.loadbalancer.server.port=8080
+    networks:
+      - thinknetwork
 
 volumes:
   grafana-data:
