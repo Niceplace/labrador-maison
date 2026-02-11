@@ -1,6 +1,6 @@
 services:
   firefly-iii:
-    image: fireflyiii/core@sha256:a1f65bf8d1ddb3c6684ab720439b48554eae6ef85c768076b7f495189efc716e
+    image: fireflyiii/core@sha256:e7a4e3b171cc9ab06a057357900b156ca16dc9e092a67d0402a878356807b392
     container_name: firefly-iii
     restart: unless-stopped
     volumes:
