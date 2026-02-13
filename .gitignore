@@ -15,3 +15,6 @@ komodo/backups/
 
 # Registry secrets
 container-registry/.env
+
+# Grafana secrets
+grafana-oss-stack/.env
