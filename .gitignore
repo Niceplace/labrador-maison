@@ -11,6 +11,7 @@ concourse-ci/scripts/
 # Komodo secrets and data
 komodo/.env
 komodo/data/
+komodo/backups/
 
 # Registry secrets
 container-registry/.env
