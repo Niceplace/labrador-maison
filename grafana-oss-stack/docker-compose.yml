@@ -108,7 +108,7 @@ services:
       - loki
       - tempo
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor@sha256:78ae90d60432609208a2db1b446a6f64da60b433cacd5dff2cd2e44eba280653
+    image: gcr.io/cadvisor/cadvisor@sha256:9cc0da1192a4d0cd3597d16cdc3c625b8cc5636cee201f3d122c8331e1a01069
     container_name: cadvisor
     restart: unless-stopped
     privileged: true
