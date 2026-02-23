@@ -14,6 +14,12 @@ komodo/data/
 
 # Registry secrets
 container-registry/.env
+reverse-proxy-traefik/auth/
+!reverse-proxy-traefik/auth/.gitkeep
 
 # MacOS files
 .DS_STORE
+
+# Files containing secrets
+crendentials.txt
+htpasswd
