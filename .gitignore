@@ -14,3 +14,6 @@ komodo/data/
 
 # Registry secrets
 container-registry/.env
+
+# MacOS files
+.DS_STORE
