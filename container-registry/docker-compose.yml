@@ -18,6 +18,7 @@ services:
       - "traefik.http.routers.container-registry.rule=Host(`registry.thinkcenter.dev`)"
       - "traefik.http.routers.container-registry.entrypoints=websecure"
       - "traefik.http.routers.container-registry.tls=true"
+      - "traefik.http.routers.container-registry.middlewares=registry-auth@docker"
       - "traefik.http.services.container-registry.loadbalancer.server.port=5000"
     networks:
       - default
