@@ -82,29 +82,26 @@ prometheus.remote_write "default" {
 }
 
 // ============================================
-// Docker Metrics Collection
+// Container Metrics Collection (cAdvisor)
 // ============================================
-discovery.docker "local" {
-  host = "unix:///var/run/docker.sock"
+// Built-in cAdvisor exporter collects container CPU, memory, network, disk metrics
+// See: https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.exporter.cadvisor/
+prometheus.exporter.cadvisor "containers" {
+  docker_host = "unix:///var/run/docker.sock"
+
+  // Store container labels as Prometheus labels for filtering
+  store_container_labels = true
+
+  // Keep metrics in memory for dashboard queries
+  storage_duration = "5m"
 }
 
-// Filter out containers that don't expose Prometheus metrics (e.g., MongoDB)
-// MongoDB speaks its own wire protocol, not HTTP, causing ProtocolError noise
-discovery.relabel "docker_metrics" {
-  targets = discovery.docker.local.targets
-
-  // Drop MongoDB containers - they don't expose HTTP metrics endpoints
-  rule {
-    source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
-    regex         = "mongo"
-    action        = "drop"
-  }
-}
-
-prometheus.scrape "docker" {
-  targets    = discovery.relabel.docker_metrics.output
+// Scrape cadvisor metrics and send to Prometheus
+prometheus.scrape "cadvisor" {
+  targets    = prometheus.exporter.cadvisor.containers.targets
   forward_to = [prometheus.remote_write.default.receiver]
-  job_name   = "docker"
+  job_name   = "cadvisor"
+  scrape_interval = "15s"
 }
 
 // ============================================

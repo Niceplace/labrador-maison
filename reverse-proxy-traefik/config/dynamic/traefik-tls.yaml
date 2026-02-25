@@ -23,7 +23,7 @@ tls:
        stores:
          - default
      # Registry
-     - certFile: /certs/registry.thinkcenter.dev.cert.pem
+     - certFile: /certs/registry.thinkcenter.dev
        keyFile: /certs/registry.thinkcenter.dev.key.pem
        stores:
          - default
