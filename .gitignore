@@ -5,6 +5,10 @@ concourse-ci/keys/
 # Ignore traefik log files
 reverse-proxy-traefik/logs/*.log
 
+# Ignore traefik authentication files but keep the Folder
+reverse-proxy-traefik/auth/**
+!reverse-proxy-traefik/auth/.gitkeep
+
 # Ignore pipeline helper scripts since they might contain secrets
 concourse-ci/scripts/
 
@@ -18,3 +22,7 @@ container-registry/.env
 
 # Grafana secrets
 grafana-oss-stack/.env
+
+
+# MacOS stuff
+.DS_Store
