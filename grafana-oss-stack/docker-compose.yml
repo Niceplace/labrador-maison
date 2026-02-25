@@ -1,6 +1,6 @@
 services:
   grafana:
-    image: grafana/grafana@sha256:fa801ab6e1ae035135309580891e09f7eb94d1abdbd2106bdc288030b028158c
+    image: grafana/grafana@sha256:b0ae311af06228bcfd4a620504b653db80f5b91e94dc3dc2a5b7dab202bcde20
     container_name: grafana
     restart: unless-stopped
     environment:
