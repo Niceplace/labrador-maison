@@ -9,7 +9,9 @@ services:
         target: /var/www/html/storage/upload
       - type: bind
         source: ./database/database.sqlite
-        target: /var/www/html/storage/database/database.sqlite
+        # Note: this folder will be owner by root initially, so we will need to sudo chgrp 33 database/ && sudo chmod g+w database/ ON THE HOST
+        # Otherwise write permissions are missing from the DB inside the container because it runs with the www-data user, not root
+        target: /var/www/html/storage/database/database.sqlite 
     env_file:
       - path: .app.env
         required: true
