@@ -9,7 +9,7 @@ services:
         target: /var/www/html/storage/upload
       - type: bind
         source: ./database/database.sqlite
-        target: /var/www/html/storage/database
+        target: /var/www/html/storage/database/database.sqlite
     env_file:
       - path: .app.env
         required: true
