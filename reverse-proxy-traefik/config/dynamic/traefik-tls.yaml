@@ -31,9 +31,14 @@ tls:
        keyFile: /certs/registry-ui.thinkcenter.dev.key.pem
        stores:
          - default
-     # Other services
+     # Komodo docker management
      - certFile: /certs/komodo.thinkcenter.dev
        keyFile: /certs/komodo.thinkcenter.dev.key.pem
+       stores:
+         - default
+     # Firefly finance management tool
+     - certFile: /certs/firefly.thinkcenter.dev
+       keyFile: /certs/firefly.thinkcenter.dev.key.pem
        stores:
          - default
      # Default fallback
