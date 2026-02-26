@@ -26,3 +26,6 @@ grafana-oss-stack/.env
 
 # MacOS stuff
 .DS_Store
+
+# Dotenv
+.env
