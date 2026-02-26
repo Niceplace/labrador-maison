@@ -4,31 +4,28 @@ services:
     container_name: firefly-iii
     restart: unless-stopped
     volumes:
-      - ./upload:/var/www/html/storage/upload
+      - type: volume
+        source: firefly_iii_upload
+        target: /var/www/html/storage/upload
+      - type: bind
+        source: ./database/database.sqlite
+        target: /var/www/html/storage/database
     env_file:
-      - .env
+      - path: .app.env
+        required: true
+      - path: .app.secrets.env # Will be created, managed and injected at deploy time by Komodo
+        required: true
     networks:
       - thinknetwork
     labels:
       - traefik.enable=true
+      - traefik.docker.network=thinknetwork
+      - traefik.http.routers.firefly.tls=true
       - traefik.http.routers.firefly.rule=Host(`firefly.thinkcenter.dev`)
       - traefik.http.routers.firefly.entrypoints=websecure
       - traefik.http.services.firefly.loadbalancer.server.port=8080
-    depends_on:
-      - db
-  db:
-    image: mariadb@sha256:345fa26d595e8c7fe298e0c4098ed400356f502458769c8902229b3437d6da2b
-    container_name: firefly-db
-    restart: unless-stopped
-    volumes:
-      - ./db:/var/lib/mysql
-    environment:
-      - MYSQL_RANDOM_ROOT_PASSWORD=yes
-      - MYSQL_USER=firefly
-      - MYSQL_PASSWORD=firefly_password
-      - MYSQL_DATABASE=firefly
-    networks:
-      - thinknetwork
+volumes:
+  firefly_iii_upload:
 networks:
   thinknetwork:
     external: true

@@ -29,3 +29,8 @@ grafana-oss-stack/.env
 
 # Dotenv
 .env
+*.secrets.env
+
+# Firefly-iii database bind mount
+firefly-iii/database/**
+!firefly-iii/database/.gitkeep
