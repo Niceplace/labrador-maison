@@ -13,7 +13,7 @@ services:
     env_file:
       - path: .app.env
         required: true
-      - path: .app.secrets.env
+      - path: .app.secrets.env # Will be created, managed and injected at deploy time by Komodo
         required: true
     networks:
       - thinknetwork
