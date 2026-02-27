@@ -23,7 +23,7 @@ services:
       - "traefik.http.middlewares.registry-auth.basicauth.usersfile=/etc/traefik/auth/htpasswd"
       - "traefik.http.routers.container-registry.middlewares=registry-auth"
     networks:
-      - default
+      - thinknetwork
 
   container-registry-ui:
     image: joxit/docker-registry-ui@sha256:bb5956a6b378706f1c3a92c947d0a0c606e280460cd9e37c0198caf46399c839
@@ -36,7 +36,7 @@ services:
       - "SINGLE_REGISTRY=true"
     depends_on: ['container-registry']
     networks:
-      - default
+      - thinknetwork
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.container-registry-ui.rule=Host(`registry-ui.thinkcenter.dev`)"
@@ -44,29 +44,29 @@ services:
       - "traefik.http.routers.container-registry-ui.tls=true"
 
   # Cache warmer - polls GitHub for Renovate PRs and pre-caches images
-  registry-cache-warmer:
-    container_name: registry-cache-warmer
-    image: alpine@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659
-    restart: unless-stopped
-    command:
-      - /bin/sh
-      - -c
-      - |
-        apk add --no-cache docker-cli jq curl bash ca-certificates &&
-        while ! docker info >/dev/null 2>&1; do sleep 2; done &&
-        chmod +x /scripts/warm-registry-cache.sh &&
-        /scripts/warm-registry-cache.sh
-    volumes:
-      - ./scripts:/scripts
-      - registry-cache-state:/tmp/registry-cache
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - "GITHUB_REPO=Niceplace/labrador-maison"
-      - "GITHUB_TOKEN=${GITHUB_TOKEN}"
-      - "REGISTRY_URL=registry.thinkcenter.dev"
-      - "POLL_INTERVAL_MINUTES=15"
-    networks:
-      - default
+#  registry-cache-warmer:
+#    container_name: registry-cache-warmer
+#    image: alpine@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659
+#    restart: unless-stopped
+#    command:
+#      - /bin/sh
+#      - -c
+#      - |
+#        apk add --no-cache docker-cli jq curl bash ca-certificates &&
+#        while ! docker info >/dev/null 2>&1; do sleep 2; done &&
+#        chmod +x /scripts/warm-registry-cache.sh &&
+#        /scripts/warm-registry-cache.sh
+#    volumes:
+#      - ./scripts:/scripts
+#      - registry-cache-state:/tmp/registry-cache
+#      - /var/run/docker.sock:/var/run/docker.sock
+#    environment:
+#      - "GITHUB_REPO=Niceplace/labrador-maison"
+#      - "GITHUB_TOKEN=${GITHUB_TOKEN}"
+#      - "REGISTRY_URL=registry.thinkcenter.dev"
+#      - "POLL_INTERVAL_MINUTES=15"
+#    networks:
+#      - default
 
 networks:
   default:
