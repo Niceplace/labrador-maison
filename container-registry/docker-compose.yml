@@ -23,7 +23,7 @@ services:
       - "traefik.http.middlewares.registry-auth.basicauth.usersfile=/etc/traefik/auth/htpasswd"
       - "traefik.http.routers.container-registry.middlewares=registry-auth"
     networks:
-      - thinknetwork
+      - default
 
   container-registry-ui:
     image: joxit/docker-registry-ui@sha256:bb5956a6b378706f1c3a92c947d0a0c606e280460cd9e37c0198caf46399c839
@@ -36,7 +36,7 @@ services:
       - "SINGLE_REGISTRY=true"
     depends_on: ['container-registry']
     networks:
-      - thinknetwork
+      - default
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.container-registry-ui.rule=Host(`registry-ui.thinkcenter.dev`)"
