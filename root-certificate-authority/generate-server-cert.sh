@@ -10,7 +10,7 @@ CERT_PATH="/root/ca/intermediate/certs/${COMMON_NAME}.cert.pem"
 CNF_PATH="/root/ca/intermediate/openssl.cnf"
 CA_CHAIN_PATH="/root/ca/intermediate/certs/ca-chain.cert.pem"
 
-CERT_OUT="$2/${COMMON_NAME}"
+CERT_OUT="${2:=/etc/traefik/certs/thinkcenter/dev}/${COMMON_NAME}"
 
 
 cd /root/ca

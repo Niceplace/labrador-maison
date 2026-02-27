@@ -8,6 +8,7 @@ reverse-proxy-traefik/logs/*.log
 # Ignore traefik authentication files but keep the Folder
 reverse-proxy-traefik/auth/**
 !reverse-proxy-traefik/auth/.gitkeep
+reverse-proxy-traefik/certs/
 
 # Ignore pipeline helper scripts since they might contain secrets
 concourse-ci/scripts/
