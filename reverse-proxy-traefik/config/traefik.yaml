@@ -1,4 +1,6 @@
 ## STATIC CONFIG (restart traefik to update)
+core:
+  defaultRuleSyntax: v2
 global:
   checkNewVersion: true
 log:
