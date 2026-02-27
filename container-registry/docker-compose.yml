@@ -19,6 +19,9 @@ services:
       - "traefik.http.routers.container-registry.entrypoints=websecure"
       - "traefik.http.routers.container-registry.tls=true"
       - "traefik.http.services.container-registry.loadbalancer.server.port=5000"
+      # Basic authentication using htpasswd file
+      - "traefik.http.middlewares.registry-auth.basicauth.usersfile=/etc/traefik/auth/htpasswd"
+      - "traefik.http.routers.container-registry.middlewares=registry-auth"
     networks:
       - default
 
