@@ -19,7 +19,7 @@ services:
       - traefik.http.routers.firefly.entrypoints=websecure
       - traefik.http.services.firefly.loadbalancer.server.port=8080
   ihatemoney:
-    image: ihatemoney/ihatemoney@sha256:5ff0b55411f5abb98539f571af56059608dff64f0dab8509f9ebddd8aacce4bd
+    image: ihatemoney/ihatemoney@sha256:a8b1746af709a93baf1f08ff7d593e8c1d97c4f46b685f8d37a3f7b00f0450e3
     container_name: ihatemoney
     restart: unless-stopped
     volumes:
