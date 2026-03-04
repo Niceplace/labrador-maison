@@ -2,7 +2,7 @@ version: '3'
 
 services:
   concourse-db:
-    image: postgres:14-bullseye@sha256:230c8fb46b449f08ba70dd5b4d28df778e162ccc467d35500d50ae2e785da07b
+    image: postgres:17-bullseye@sha256:724a6dfcc90fb6b2eb7caa062c7c852fe60fc30727896a044f4d478f423f183f
     restart: unless-stopped
     environment:
       POSTGRES_DB: concourse
