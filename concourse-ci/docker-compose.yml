@@ -23,7 +23,7 @@ services:
     # https://concourse-ci.org/postgresql-node.html#db-resource-utilization
 
   concourse-web:
-    image: concourse/concourse:8.0.2@sha256:d55c9307757e92e24f3550295596665730c834f3a83e65a58dcfce4c954f2ef4
+    image: concourse/concourse:8.1.0@sha256:b9863dc0e541617c1ee66d80618319ba5bd524bcac150c4e0311d83293edcf7e
     restart: unless-stopped
     command: web
     labels:
@@ -71,7 +71,7 @@ services:
     # https://concourse-ci.org/concourse-web.html#web-resource-utilization
 
   concourse-worker:
-    image: concourse/concourse:8.0.2@sha256:d55c9307757e92e24f3550295596665730c834f3a83e65a58dcfce4c954f2ef4
+    image: concourse/concourse:8.1.0@sha256:b9863dc0e541617c1ee66d80618319ba5bd524bcac150c4e0311d83293edcf7e
     restart: unless-stopped
     command: worker
     stop_signal: SIGUSR2
