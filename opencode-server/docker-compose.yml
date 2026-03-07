@@ -1,6 +1,6 @@
 services:
   opencode-server:
-    image: ghcr.io/anomalyco/opencode
+    image: ghcr.io/anomalyco/opencode@sha256:2a8154bf48f06dfda30deddbd191eba5e2f8f6b3e01b17a720a23f04811225b3
     ports:
       - "4096:4096"
     entrypoint:
@@ -18,7 +18,7 @@ services:
       - traefik.http.routers.opencode.entrypoints=websecure
       - traefik.http.routers.opencode.tls=true
       - traefik.http.services.opencode.loadbalancer.server.port=4096
-    env:
+    environment:
       OPENCODE_SERVER_USERNAME: opencode
     networks:
       - thinknetwork
