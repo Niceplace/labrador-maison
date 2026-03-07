@@ -5,7 +5,8 @@ services:
     ports:
       - "4096:4096"
     entrypoint:
-      - opencode web
+      - opencode
+      - web
       - --print-logs
       - --port 4096
       - --mdns
