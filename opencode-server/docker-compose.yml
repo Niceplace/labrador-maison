@@ -1,0 +1,29 @@
+services:
+  opencode-server:
+    image: ghcr.io/anomalyco/opencode@sha256:2a8154bf48f06dfda30deddbd191eba5e2f8f6b3e01b17a720a23f04811225b3
+    restart: unless-stopped
+    ports:
+      - "4096:4096"
+    entrypoint:
+      - opencode
+      - web
+      - --port 4096
+      - --hostname 0.0.0.0
+      - --mdns true
+      - --mdns-domain opencode.thinkcenter.dev
+      - --cors https://opencode.thinkcenter.dev
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=thinknetwork
+      - traefik.http.routers.opencode.rule=Host(`opencode.thinkcenter.dev`)
+      - traefik.http.routers.opencode.entrypoints=websecure
+      - traefik.http.routers.opencode.tls=true
+      - traefik.http.services.opencode.loadbalancer.server.port=4096
+    environment:
+      OPENCODE_SERVER_USERNAME: opencode
+    networks:
+      - thinknetwork
+networks:
+  thinknetwork:
+    name: thinknetwork
+    external: true
