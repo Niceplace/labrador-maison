@@ -2,13 +2,7 @@ services:
   opencode-server:
     image: ghcr.io/anomalyco/opencode
     ports:
-      - name: web
-        target: 4096
-        host_ip: 0.0.0.0
-        published: "4096"
-        protocol: tcp
-        app_protocol: http
-        mode: host
+      - "4096:4096"
     entrypoint:
       - opencode
       - web
