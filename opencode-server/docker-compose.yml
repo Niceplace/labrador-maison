@@ -4,14 +4,7 @@ services:
     restart: unless-stopped
     ports:
       - "4096:4096"
-    entrypoint:
-      - opencode
-      - web
-      - --port 4096
-      - --hostname 0.0.0.0
-      - --mdns true
-      - --mdns-domain opencode.thinkcenter.dev
-      - --cors https://opencode.thinkcenter.dev
+    command: "web --port 4096 --mdns --mdns-domain opencode.thinkcenter.dev --cors https://opencode.thinkcenter.dev"
     labels:
       - traefik.enable=true
       - traefik.docker.network=thinknetwork
