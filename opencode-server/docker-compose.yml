@@ -5,13 +5,12 @@ services:
     ports:
       - "4096:4096"
     entrypoint:
-      - opencode
-      - web
+      - opencode web
+      - --print-logs
       - --port 4096
-      - --hostname 0.0.0.0
-      - --mdns true
-      - --mdns-domain opencode.thinkcenter.dev
-      - --cors https://opencode.thinkcenter.dev
+      - --mdns
+      - --mdns-domain "opencode.thinkcenter.dev"
+      - --cors "https://opencode.thinkcenter.dev"
     labels:
       - traefik.enable=true
       - traefik.docker.network=thinknetwork
