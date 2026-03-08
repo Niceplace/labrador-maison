@@ -1,0 +1,38 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "logLevel": "INFO",
+  "provider": {
+    "zai": {
+      "name": "Z.AI Coding Plan",
+      "options": {
+        "apiKey": "{env:ZAI_OPENCODE_API_KEY}",
+      },
+    },
+  },
+  "default_agent": "plan",
+  "small_model": "zai/glm-4.7-flash",
+  "share": "manual",
+  "autoupdate": "notify",
+  "watcher": {
+    "ignore": ["node_modules/**", "**/.DS_Store"],
+  },
+  "permission": {
+    "edit": "ask",
+    "write": "ask",
+    "webfetch": "ask",
+    "task": "allow",
+    "lsp": "allow",
+    "read": "allow",
+    "glob": "allow",
+    "list": "allow",
+    "grep": "allow",
+    "bash": {
+      "cat": "allow",
+      "ls": "allow",
+      "echo": "allow",
+      "find": "allow",
+      "grep *": "allow",
+      "*": "ask",
+    },
+  },
+}
