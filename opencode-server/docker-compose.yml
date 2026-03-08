@@ -14,26 +14,27 @@ services:
       - traefik.http.services.opencode.loadbalancer.server.port=4096
     environment:
       OPENCODE_SERVER_USERNAME: opencode
+      OPENCODE_CONFIG_DIR: /etc/opencode/config
       # OPENCODE_SERVER_USERNAME will be injected at deploy time via Komodo
     volumes:
       - type: bind
         source: ./opencode.jsonc
-        target: ~/.config/opencode/opencode.jsonc
+        target: /etc/opencode/config/opencode.jsonc
       - type: bind
         source: ~/workspace/personal/private-config/ai-tooling-config/skills
-        target: ~/.config/opencode/skills
+        target: /etc/opencode/config/skills
         read_only: true
       - type: bind
         source: ~/workspace/personal/private-config/ai-tooling-config/agents
-        target: ~/.config/opencode/agents
+        target: /etc/opencode/config/agents
         read_only: true
       - type: bind
         source: ~/workspace/personal/private-config/ai-tooling-config/commands
-        target: ~/.config/opencode/commands
+        target: /etc/opencode/config/commands
         read_only: true
       - type: bind
         source: ~/workspace/ai-support
-        target: ~/workspace/ai-support
+        target: /workspace/ai-support
         read_only: true
     networks:
       - thinknetwork
