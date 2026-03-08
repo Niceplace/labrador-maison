@@ -22,19 +22,19 @@ services:
       - type: bind
         source: ~/workspace/personal/private-config/ai-tooling-config/skills
         target: ~/.config/opencode/skills
-        readonly: true
+        read_only: true
       - type: bind
         source: ~/workspace/personal/private-config/ai-tooling-config/agents
         target: ~/.config/opencode/agents
-        readonly: true
+        read_only: true
       - type: bind
         source: ~/workspace/personal/private-config/ai-tooling-config/commands
         target: ~/.config/opencode/commands
-        readonly: true
+        read_only: true
       - type: bind
         source: ~/workspace/ai-support
         target: ~/workspace/ai-support
-        readonly: true
+        read_only: true
     networks:
       - thinknetwork
 networks:
