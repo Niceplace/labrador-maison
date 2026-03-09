@@ -35,3 +35,9 @@ grafana-oss-stack/.env
 # Firefly-iii database bind mount
 firefly-iii/database/**
 !firefly-iii/database/.gitkeep
+
+# Support folders for opencode
+ai-support/**
+!ai-support/.gitkeep
+ai-tooling/**
+!ai-tooling/.gitkeep
