@@ -20,11 +20,11 @@ services:
         source: ./opencode.jsonc
         target: /etc/opencode/opencode.jsonc
       - type: bind
-        source: ./ai-tooling
+        source: /opt/ai-tooling
         target: /etc/opencode/config
         read_only: true
       - type: bind
-        source: ./ai-support
+        source: /opt/ai-support
         target: /workspace/ai-support
         read_only: true
     networks:
