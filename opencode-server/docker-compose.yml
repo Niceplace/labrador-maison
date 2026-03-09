@@ -18,10 +18,10 @@ services:
     volumes:
       - type: bind
         source: ./opencode.jsonc
-        target: /etc/opencode/opencode.jsonc
+        target: ${OPENCODE_CONFIG}
       - type: bind
         source: /opt/ai-tooling
-        target: /etc/opencode/config
+        target: ${OPENCODE_CONFIG_DIR}
         read_only: true
       - type: bind
         source: /opt/ai-support
