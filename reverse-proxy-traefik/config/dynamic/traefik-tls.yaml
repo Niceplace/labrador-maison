@@ -46,6 +46,11 @@ tls:
       keyFile: /certs/opencode.thinkcenter.dev.key.pem
       stores:
         - default
+    # OpenCode server & web interface
+    - certFile: /certs/concourse.thinkcenter.dev
+      keyFile: /certs/concourse.thinkcenter.dev.key.pem
+      stores:
+        - default
     # Default fallback
     - certFile: /certs/thinkcenter.dev.cert.pem
       keyFile: /certs/thinkcenter.dev.key.pem
