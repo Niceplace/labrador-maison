@@ -1,0 +1,34 @@
+version: "3"
+
+services:
+  concourse-worker:
+    image: concourse/concourse:8.1.0@sha256:b9863dc0e541617c1ee66d80618319ba5bd524bcac150c4e0311d83293edcf7e
+    restart: unless-stopped
+    command: worker
+    stop_signal: SIGUSR2
+    ports:
+      - "8888:8888"
+    privileged: true
+    volumes:
+      - type: bind
+        source: /opt/concourse/keys/worker
+        target: /concourse-keys
+    env_file:
+      - path: .worker.env
+        required: true
+    environment:
+      CONCOURSE_TSA_HOST: ${CONCOURSE_TSA_HOST_EXTERNAL}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+      start_interval: 5s
+    networks:
+      - default
+
+networks:
+  default:
+    external: true
+    name: thinknetwork
