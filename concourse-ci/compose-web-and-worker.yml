@@ -17,6 +17,9 @@ services:
       - type: volume
         source: pgconcoursedata
         target: /var/lib/postgresql/data
+      - type: bind
+        source: /opt/concourse/worker-state # create this dir on the host first
+        target: /worker-state
     networks:
       - default
 
