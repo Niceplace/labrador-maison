@@ -10,7 +10,7 @@ services:
       - path: .secrets.env
         required: true
     environment:
-      POSTGRES_PASSWORD: ${CONCOURSE_POSTRGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${CONCOURSE_POSTGRES_PASSWORD}
     volumes:
       - type: volume
         source: pgconcoursedata
