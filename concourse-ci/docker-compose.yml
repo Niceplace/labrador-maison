@@ -4,10 +4,13 @@ services:
   concourse-db:
     image: postgres:17-bullseye@sha256:724a6dfcc90fb6b2eb7caa062c7c852fe60fc30727896a044f4d478f423f183f
     restart: unless-stopped
+    env_file:
+      - path: .db.env
+        required: true
+      - path: .secrets.env
+        required: true
     environment:
-      POSTGRES_DB: concourse
-      POSTGRES_USER: concourse_user
-      POSTGRES_PASSWORD: concourse_pass
+      POSTGRES_PASSWORD: ${CONCOURSE_POSTRGRES_PASSWORD}
     volumes:
       - type: volume
         source: pgconcoursedata
