@@ -36,8 +36,8 @@ services:
       - "traefik.http.routers.concourse-web.entrypoints=websecure"
       - "traefik.http.routers.concourse-web.tls=true"
       - "traefik.http.services.concourse-web.loadbalancer.server.port=8080"
-    links:
-      - "concourse-db"
+    ports:
+      - "2222:2222" # For incoming communication via external workers on other servers
     depends_on:
       - "concourse-db"
     volumes:
@@ -56,8 +56,7 @@ services:
     command: worker
     stop_signal: SIGUSR2
     ports:
-      - 7777:7777
-      - 7788:7788
+      - 8888:8888
     privileged: true
     depends_on:
       - "concourse-web"
@@ -68,6 +67,15 @@ services:
     env_file:
       - path: .worker.env
         required: true
+    environment:
+      CONCOURSE_TSA_HOST: ${CONCOURSE_TSA_HOST_INTERNAL}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+      start_interval: 5s
     networks:
       - default
 
