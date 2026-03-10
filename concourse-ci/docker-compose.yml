@@ -40,8 +40,6 @@ services:
       - "concourse-db"
     depends_on:
       - "concourse-db"
-    ports:
-      - "9080:8080"
     volumes:
       - type: bind
         source: /opt/concourse/keys/web
