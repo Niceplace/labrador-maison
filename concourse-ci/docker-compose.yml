@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   concourse-db:
@@ -12,20 +12,18 @@ services:
       - type: volume
         source: pgconcoursedata
         target: /var/lib/postgresql/data
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "5"
-        max-size: "10m"
-    networks: 
-      - database
-    # No outbound traffic, incoming only from web node 
-    # https://concourse-ci.org/postgresql-node.html#db-resource-utilization
+    networks:
+      - default
 
   concourse-web:
     image: concourse/concourse:8.1.0@sha256:b9863dc0e541617c1ee66d80618319ba5bd524bcac150c4e0311d83293edcf7e
     restart: unless-stopped
     command: web
+    env_file:
+      - path: .web.env
+        required: true
+      - path: .secrets.env
+        required: true
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=thinknetwork"
@@ -33,42 +31,21 @@ services:
       - "traefik.http.routers.concourse-web.entrypoints=websecure"
       - "traefik.http.routers.concourse-web.tls=true"
       - "traefik.http.services.concourse-web.loadbalancer.server.port=8080"
-        #      - "traefik.tcp.routers.concourse-web.tls.passthrough=true"
-        #      - "traefik.tcp.routers.concourse-web.rule=HostSNI(`concourse.thinkcenter.dev`)"
-        #      - "traefik.tcp.routers.concourse-web.entrypoints=websecure"
-        #      - "traefik.tcp.services.concourse-web.loadbalancer.server.port=8443"
-    links: 
+    links:
       - "concourse-db"
-    depends_on: 
+    depends_on:
       - "concourse-db"
-    #ports: 
+    #ports:
     #  - "8080:8080"
     volumes:
-      - "./keys/web:/concourse-keys"
-      - "./certs:/opt/mtls/certs"
-    environment:
-      CONCOURSE_EXTERNAL_URL: https://concourse.thinkcenter.dev
-      CONCOURSE_POSTGRES_HOST: concourse-db
-      CONCOURSE_POSTGRES_USER: concourse_user
-      CONCOURSE_POSTGRES_PASSWORD: concourse_pass
-      CONCOURSE_POSTGRES_DATABASE: concourse
-      CONCOURSE_ADD_LOCAL_USER: niceplace:Passw0rd
-      CONCOURSE_MAIN_TEAM_LOCAL_USER: niceplace
-        #      CONCOURSE_TLS_CA_CERT: /opt/mtls/certs/wildcard.thinkcenter.dev.client-cert.pem
-        #      CONCOURSE_TLS_KEY: /opt/mtls/certs/wildcard.thinkcenter.dev.key.pem
-        #      CONCOURSE_TLS_CERT: /opt/mtls/certs/wildcard.thinkcenter.dev.cert.pem
-        #      CONCOURSE_TLS_BIND_PORT: 8443
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "5"
-        max-size: "10m"
+      - type: bind
+        source: /opt/concourse/keys/web
+        target: /concourse-keys
+      - type: bind
+        source: /opt/concourse/certs
+        target: /opt/mtls/certs
     networks:
-      - web
-      - database
-    # Outbound traffic to db, other web nodes (if present)
-    # Inbound traffic from workers (port 2222), web UI & fly CLI
-    # https://concourse-ci.org/concourse-web.html#web-resource-utilization
+      - default
 
   concourse-worker:
     image: concourse/concourse:8.1.0@sha256:b9863dc0e541617c1ee66d80618319ba5bd524bcac150c4e0311d83293edcf7e
@@ -76,37 +53,25 @@ services:
     command: worker
     stop_signal: SIGUSR2
     privileged: true
-    depends_on: 
+    depends_on:
       - "concourse-web"
-    links: 
+    links:
       - "concourse-web"
-    volumes: 
-      - "./keys/worker:/concourse-keys"
+    volumes:
+      - type: bind
+        source: /opt/concourse/keys/worker
+        target: /concourse-keys
     environment:
       CONCOURSE_TSA_HOST: "concourse-web:2222"
-      # enable DNS proxy to support Docker's 127.x.x.x DNS server
-      CONCOURSE_CONTAINERD_DNS_PROXY_ENABLE: "true"
       # https://github.com/concourse/concourse-docker/issues/74#issuecomment-925058923
       CONCOURSE_RUNTIME: "containerd"
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "5"
-        max-size: "10m"
     networks:
-      - web
-    # Outbound traffic: the web, web node, other workers other workers if P2P streaming enabled
-    # Inbound traffic: from web node (7777 and 7788), other workers if P2P streaming enabled
-    # https://concourse-ci.org/concourse-worker.html#worker-resource-utilization
-
+      - default
 
 networks:
-  web:
+  default:
     external: true
     name: thinknetwork
-  database:
-    external: true
-    name: concourse-internal
 
 volumes:
   pgconcoursedata:
