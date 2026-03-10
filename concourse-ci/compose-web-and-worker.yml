@@ -1,0 +1,88 @@
+version: "3"
+
+services:
+  concourse-db:
+    image: postgres:17-bullseye@sha256:724a6dfcc90fb6b2eb7caa062c7c852fe60fc30727896a044f4d478f423f183f
+    restart: unless-stopped
+    ports:
+      - "6543:5432"
+    env_file:
+      - path: .db.env
+        required: true
+      - path: .secrets.env
+        required: true
+    environment:
+      POSTGRES_PASSWORD: ${CONCOURSE_POSTGRES_PASSWORD}
+    volumes:
+      - type: volume
+        source: pgconcoursedata
+        target: /var/lib/postgresql/data
+    networks:
+      - default
+
+  concourse-web:
+    image: concourse/concourse:8.1.0@sha256:b9863dc0e541617c1ee66d80618319ba5bd524bcac150c4e0311d83293edcf7e
+    restart: unless-stopped
+    command: web
+    env_file:
+      - path: .web.env
+        required: true
+      - path: .secrets.env
+        required: true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=thinknetwork"
+      - "traefik.http.routers.concourse-web.rule=Host(`concourse.thinkcenter.dev`)"
+      - "traefik.http.routers.concourse-web.entrypoints=websecure"
+      - "traefik.http.routers.concourse-web.tls=true"
+      - "traefik.http.services.concourse-web.loadbalancer.server.port=8080"
+    ports:
+      - "2222:2222" # For incoming communication via external workers on other servers
+    depends_on:
+      - "concourse-db"
+    volumes:
+      - type: bind
+        source: /opt/concourse/keys/web
+        target: /concourse-keys
+      - type: bind
+        source: /opt/concourse/certs
+        target: /opt/mtls/certs
+    networks:
+      - default
+
+  concourse-worker:
+    image: concourse/concourse:8.1.0@sha256:b9863dc0e541617c1ee66d80618319ba5bd524bcac150c4e0311d83293edcf7e
+    restart: unless-stopped
+    command: worker
+    stop_signal: SIGUSR2
+    ports:
+      - 8888:8888
+    privileged: true
+    depends_on:
+      - "concourse-web"
+    volumes:
+      - type: bind
+        source: /opt/concourse/keys/worker
+        target: /concourse-keys
+    env_file:
+      - path: .worker.env
+        required: true
+    environment:
+      CONCOURSE_TSA_HOST: ${CONCOURSE_TSA_HOST_INTERNAL}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+      start_interval: 5s
+    networks:
+      - default
+
+networks:
+  default:
+    external: true
+    name: thinknetwork
+
+volumes:
+  pgconcoursedata:
