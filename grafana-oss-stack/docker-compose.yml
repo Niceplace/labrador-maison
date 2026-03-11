@@ -67,7 +67,7 @@ services:
     networks:
       - thinknetwork
   tempo:
-    image: grafana/tempo@sha256:9dc30bd8f976666fb78c6e7b523631acf74e4d6331096a6dbf97c0f10fe9651b
+    image: grafana/tempo@sha256:fff5b416b34b027e665d19ce4493cf27d8e0db5997b7d7047958d07a51aa801c
     container_name: tempo
     restart: unless-stopped
     command: "-config.file=/etc/tempo/config.yaml"
