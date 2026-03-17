@@ -2,7 +2,7 @@ version: "3"
 
 services:
   concourse-worker:
-    image: concourse/concourse:8.1.0@sha256:b9863dc0e541617c1ee66d80618319ba5bd524bcac150c4e0311d83293edcf7e
+    image: concourse/concourse:8.1.1@sha256:ecfb693fe2a60f1126965565ec489d6acb5d0d9ddd35508eeac5ff193520ae14
     restart: unless-stopped
     command: worker
     stop_signal: SIGUSR2
