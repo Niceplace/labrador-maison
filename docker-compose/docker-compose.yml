@@ -63,7 +63,7 @@ services:
       - traefik.http.routers.actual.entrypoints=websecure
       - traefik.http.services.actual.loadbalancer.server.port=5006
   wallos:
-    image: bellamy/wallos@sha256:46f25daeebedbe00f409abdc82f07d1bde6818dc9fee8b360b0b09c453c4b999
+    image: bellamy/wallos@sha256:a1894b1653a7aa9a44e887a06b4db9032c2e61d663fb5b7e7c7ad53f5689c409
     container_name: wallos
     restart: unless-stopped
     volumes:
