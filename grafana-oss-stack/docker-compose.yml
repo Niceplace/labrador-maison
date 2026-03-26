@@ -50,7 +50,7 @@ services:
     networks:
       - thinknetwork
   loki:
-    image: grafana/loki@sha256:3c8fd3570dd9219951a60d3f919c7f31923d10baee578b77bc26c4a0b32d092d
+    image: grafana/loki@sha256:9db961170b729dc38277963cbb4a79941626388562cc455db61bf85564aa8945
     container_name: loki
     restart: unless-stopped
     command: "-config.file=/etc/loki/local-config.yaml"
