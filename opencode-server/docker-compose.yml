@@ -1,6 +1,6 @@
 services:
   opencode-server:
-    image: ghcr.io/anomalyco/opencode@sha256:41a7301f260bbab44cabcadbd81f0636c9c340a18423588fbdff35daf6974695
+    image: ghcr.io/anomalyco/opencode@sha256:dd557d616a68f4ca5541e518ed75f2c62459f77263ae50be75235945d3cf63ee
     restart: no
     ports:
       - "4096:4096"
