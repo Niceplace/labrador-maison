@@ -32,6 +32,12 @@ grafana-oss-stack/.env
 .env
 *.secrets.env
 
+# Elasticsearch data
+elasticsearch-stack/data/elasticsearch/**
+!elasticsearch-stack/data/elasticsearch/.gitkeep
+elasticsearch-stack/data/kibana/**
+!elasticsearch-stack/data/kibana/.gitkeep
+
 # Firefly-iii database bind mount
 firefly-iii/database/**
 !firefly-iii/database/.gitkeep

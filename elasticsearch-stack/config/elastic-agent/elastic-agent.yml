@@ -1,0 +1,36 @@
+outputs:
+  default:
+    type: elasticsearch
+    hosts: ["http://elasticsearch:9200"]
+    username: elastic
+    password: ${ELASTIC_PASSWORD}
+
+inputs:
+  - type: system/metrics
+    id: system-metrics
+    streams:
+      - metricsets:
+          - cpu
+          - memory
+          - filesystem
+          - fsstat
+          - diskio
+          - network
+          - load
+        period: 10s
+
+  - type: docker/metrics
+    id: docker-container-metrics
+    hosts:
+      - unix:///var/run/docker.sock
+    period: 10s
+
+  - type: docker/logs
+    id: docker-container-logs
+    hosts:
+      - unix:///var/run/docker.sock
+    combine_partial: true
+    stream:
+      type: all
+    processors:
+      - add_docker_metadata: ~

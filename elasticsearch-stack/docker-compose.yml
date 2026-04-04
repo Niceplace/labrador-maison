@@ -1,0 +1,89 @@
+env_file:
+  - .env
+  - .secrets.env
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ES_VERSION}@sha256:dcd9f4564dc6f9f34d2ca12c09df65a575f8b5151155809a62caf71c4ecba8ea
+    container_name: elasticsearch
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ}
+      - cluster.name=${ES_CLUSTER_NAME}
+      - node.name=${ES_NODE_NAME}
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      - xpack.ingest.otlp.enabled=true
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - ES_JAVA_OPTS=${ES_JAVA_OPTS}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./data/elasticsearch:/usr/share/elasticsearch/data
+    deploy:
+      resources:
+        limits:
+          memory: ${ES_MEM_LIMIT}
+    ports:
+      - "${OTLP_GRPC_PORT}:8200"
+      - "${OTLP_HTTP_PORT}:8201"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=thinknetwork
+      - traefik.http.routers.elasticsearch.rule=Host(`elasticsearch.thinkcenter.dev`)
+      - traefik.http.routers.elasticsearch.entrypoints=websecure
+      - traefik.http.routers.elasticsearch.tls=true
+      - traefik.http.middlewares.es-auth.basicauth.users=${ES_BASIC_AUTH}
+      - traefik.http.routers.elasticsearch.middlewares=es-auth
+      - traefik.http.services.elasticsearch.loadbalancer.server.port=9200
+    networks:
+      - thinknetwork
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:${KIBANA_VERSION}@sha256:15884572fc31df5c6b5fd1bdae2b5a0b331738ac094a9b36cd529151d9c8f167
+    container_name: kibana
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ}
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${KIBANA_ENCRYPTION_KEY}
+    depends_on:
+      - elasticsearch
+    volumes:
+      - ./data/kibana:/usr/share/kibana/data
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=thinknetwork
+      - traefik.http.routers.kibana.rule=Host(`kibana.thinkcenter.dev`)
+      - traefik.http.routers.kibana.entrypoints=websecure
+      - traefik.http.routers.kibana.tls=true
+      - traefik.http.services.kibana.loadbalancer.server.port=5601
+    networks:
+      - thinknetwork
+
+  elastic-agent:
+    image: docker.elastic.co/elastic-agent/elastic-agent:${AGENT_VERSION}@sha256:ce2f66adacd72ec21e51db32b509ac51286bd95fc67e0df69fe9c6aa26034434
+    container_name: elastic-agent
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+    volumes:
+      - ./config/elastic-agent/elastic-agent.yml:/usr/share/elastic-agent/elastic-agent.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    depends_on:
+      - elasticsearch
+    networks:
+      - thinknetwork
+
+networks:
+  thinknetwork:
+    external: true
+    name: thinknetwork
