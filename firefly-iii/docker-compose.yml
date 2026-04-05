@@ -1,6 +1,7 @@
 services:
   app:
-    image: fireflyiii/core@sha256:fe4ecec4c2ba2b2978a32b3defaf270407f9fddf0e789a18648121ab84bb68d2
+    build: .
+    image: firefly-iii-otel
     container_name: firefly-iii
     restart: unless-stopped
     volumes:
