@@ -21,6 +21,7 @@ services:
       - traefik.http.routers.grafana.entrypoints=websecure
       - traefik.http.routers.grafana.tls=true
       - traefik.http.services.grafana.loadbalancer.server.port=3000
+      - alloy.service.name=grafana-oss-stack-grafana
     networks:
       - thinknetwork
   prometheus:
@@ -47,6 +48,7 @@ services:
       - traefik.http.middlewares.prometheus-auth.basicauth.users=${PROMETHEUS_AUTH:-admin:$$apr1$$hash}
       - traefik.http.routers.prometheus.middlewares=prometheus-auth
       - traefik.http.services.prometheus.loadbalancer.server.port=9090
+      - alloy.service.name=grafana-oss-stack-prometheus
     networks:
       - thinknetwork
   loki:
@@ -64,6 +66,7 @@ services:
       - traefik.http.routers.loki.entrypoints=websecure
       - traefik.http.routers.loki.tls=true
       - traefik.http.services.loki.loadbalancer.server.port=3100
+      - alloy.service.name=grafana-oss-stack-loki
     networks:
       - thinknetwork
   redpanda:
@@ -96,6 +99,7 @@ services:
       - traefik.http.routers.tempo.entrypoints=websecure
       - traefik.http.routers.tempo.tls=true
       - traefik.http.services.tempo.loadbalancer.server.port=3200
+      - alloy.service.name=grafana-oss-stack-tempo
     networks:
       - thinknetwork
   alloy:
@@ -123,7 +127,9 @@ services:
       # HTTP router
       - traefik.http.routers.alloy-http.rule=Host(`alloy-otlp.thinkcenter.dev`)
       - traefik.http.routers.alloy-http.entrypoints=otlp-http
+      - traefik.http.routers.alloy-http.tls=true
       - traefik.http.services.alloy-http.loadbalancer.server.port=4318
+      - alloy.service.name=grafana-oss-stack-alloy
       # gRPC router (h2c for non-TLS HTTP/2)
       - traefik.http.routers.alloy-grpc.rule=Host(`alloy-otlp.thinkcenter.dev`)
       - traefik.http.routers.alloy-grpc.entrypoints=otlp-grpc

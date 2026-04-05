@@ -26,6 +26,7 @@ services:
       - traefik.http.routers.firefly.rule=Host(`firefly.thinkcenter.dev`)
       - traefik.http.routers.firefly.entrypoints=websecure
       - traefik.http.services.firefly.loadbalancer.server.port=8080
+      - alloy.service.name=firefly-iii-app
 volumes:
   firefly_iii_upload:
 networks:

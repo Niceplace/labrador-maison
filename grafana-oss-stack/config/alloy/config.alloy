@@ -130,9 +130,10 @@ discovery.relabel "docker_logs" {
     target_label  = "compose_project"
   }
 
-  // Extract compose service as service_name
+  // Use custom service name from alloy.service.name label
+  // This provides explicit control: "grafana-oss-stack-grafana", "firefly-iii-app", etc.
   rule {
-    source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
+    source_labels = ["__meta_docker_container_label_alloy_service_name"]
     target_label  = "service_name"
   }
 }
