@@ -17,6 +17,7 @@ ingest:
   kafka:
     address: redpanda:9092
     topic: tempo-ingest
+    disable_kafka_telemetry: true
 
 storage:
   trace:
@@ -25,6 +26,3 @@ storage:
       path: /data/tempo/traces
     wal:
       path: /data/tempo/wal
-
-# Disable Kafka telemetry (enabled by default in Tempo 2.10+)
-disable_kafka_telemetry: true
