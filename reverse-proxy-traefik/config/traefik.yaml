@@ -35,3 +35,7 @@ entryPoints:
           permanent: true
   websecure:
     address: :443
+  otlp-http:
+    address: :4318
+  otlp-grpc:
+    address: :4317
