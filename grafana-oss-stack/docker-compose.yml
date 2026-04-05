@@ -105,10 +105,15 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=thinknetwork
-      - traefik.http.routers.alloy-otlp-http.rule=Host(`alloy-otlp.thinkcenter.dev`)
-      - traefik.http.routers.alloy-otlp-http.entrypoints=websecure
-      - traefik.http.routers.alloy-otlp-http.tls=true
-      - traefik.http.services.alloy-otlp-http.loadbalancer.server.port=4318
+      # HTTP router
+      - traefik.http.routers.alloy-http.rule=Host(`alloy-otlp.thinkcenter.dev`)
+      - traefik.http.routers.alloy-http.entrypoints=otlp-http
+      - traefik.http.services.alloy-http.loadbalancer.server.port=4318
+      # gRPC router (h2c for non-TLS HTTP/2)
+      - traefik.http.routers.alloy-grpc.rule=Host(`alloy-otlp.thinkcenter.dev`)
+      - traefik.http.routers.alloy-grpc.entrypoints=otlp-grpc
+      - traefik.http.services.alloy-grpc.loadbalancer.server.port=4317
+      - traefik.http.services.alloy-grpc.loadbalancer.server.scheme=h2c
     networks:
       - thinknetwork
     depends_on:
