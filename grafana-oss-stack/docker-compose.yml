@@ -70,7 +70,7 @@ services:
     networks:
       - thinknetwork
   redpanda:
-    image: redpandadata/redpanda:latest
+    image: redpandadata/redpanda:latest@sha256:65a7a93449f113a2941e0e8a9cd7eb1ed3ba153547b6b2b47f11796e9f754345
     container_name: redpanda
     restart: unless-stopped
     ports:
