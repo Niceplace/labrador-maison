@@ -3,7 +3,7 @@
 ################################
 services:
   mongo:
-    image: mongo@sha256:eea8506335198f8b359865b32004036310854a935fbd317083817c614152818f
+    image: mongo@sha256:5483a68b6fe7737367be84fb963f0e440e67a87f2e57ea087e608da034e91318
     labels:
       komodo.skip:
     command: --quiet --wiredTigerCacheSizeGB 0.25
@@ -18,7 +18,8 @@ services:
       - thinknetwork
 
   core:
-    image: ghcr.io/moghtech/komodo-core@sha256:a1cceb4f971443b1e9f2a767788f663d0afb6244ee2135f7fe3fd1036af37ade
+    image: ghcr.io/moghtech/komodo-core@sha256:2bbbb1efd3534211dac35091e0818f10398d9bdd98fdbf0ddef09e9e0b5ec4ba
+    init: true
     labels:
       komodo.skip:
       traefik.enable: "true"
@@ -57,12 +58,14 @@ services:
       KOMODO_LOGGING_OPENTELEMETRY_SERVICE_NAME: ${KOMODO_LOGGING_OPENTELEMETRY_SERVICE_NAME}
       TZ: ${TZ}
     volumes:
+      - komodo-core-keys:/config/keys
       - ${COMPOSE_KOMODO_BACKUPS_PATH}:/backups
     networks:
       - thinknetwork
 
   periphery:
-    image: ghcr.io/moghtech/komodo-periphery@sha256:bd79cf960ed054fe8e02384322303e462448679b1149dde48bbef151417255b1
+    image: ghcr.io/moghtech/komodo-periphery@sha256:9324baa15d355796fc8ab7fb4a4de7f2904327238100fa78fc2c814ba9d56022
+    init: true
     labels:
       komodo.skip:
     restart: unless-stopped
@@ -76,7 +79,11 @@ services:
       PERIPHERY_LOGGING_OTLP_ENDPOINT: ${PERIPHERY_LOGGING_OTLP_ENDPOINT}
       PERIPHERY_LOGGING_OPENTELEMETRY_SERVICE_NAME: ${PERIPHERY_LOGGING_OPENTELEMETRY_SERVICE_NAME}
       TZ: ${TZ}
+      PERIPHERY_CORE_ADDRESS: ${PERIPHERY_CORE_ADDRESS}
+      PERIPHERY_CONNECT_AS: ${PERIPHERY_CONNECT_AS}
+      PERIPHERY_ONBOARDING_KEY: ${PERIPHERY_ONBOARDING_KEY}
     volumes:
+      - komodo-periphery-keys:/config/keys
       - /var/run/docker.sock:/var/run/docker.sock
       - /proc:/proc
       - ${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}:${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}
@@ -86,6 +93,8 @@ services:
 volumes:
   mongo-data:
   mongo-config:
+  komodo-core-keys:
+  komodo-periphery-keys:
 
 networks:
   thinknetwork:
