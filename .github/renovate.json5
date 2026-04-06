@@ -2,6 +2,14 @@
   // Renovate configuration for labrador-maison
   // https://docs.renovatebot.com/configuration-options/
 
+  // GHCR.io authentication for docker images published to github (ex: Komodo)
+  "hostRules": [
+    {
+      "matchHost": "ghcr.io",
+      "token": "{{ secrets.RENOVATE_TOKEN }}"
+    }
+  ],
+
   // Custom managers for tracking Docker images in Concourse CI tasks
   "customManagers": [
     {
@@ -20,8 +28,9 @@
   "prConcurrentLimit": 0,
   "branchConcurrentLimit": 0,
 
-  // Enable digest pinning for Docker images
+  // Enable digest pinning for Docker images with explicit file matching
   "docker-compose": {
+    "fileMatch": ["**/docker-compose.{yml,yaml}"],
     "pinDigests": true
   },
 
