@@ -13,6 +13,9 @@ module.exports = {
   onboarding: false,
   requireConfig: "optional",
 
+  // Detect hostRules from environment variables
+  detectHostRulesFromEnv: true,
+
   // Make config validation errors fatal (exit with non-zero code)
   configValidationError: true,
 
