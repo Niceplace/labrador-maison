@@ -5,3 +5,5 @@ USER root
 RUN pecl install opentelemetry \
     && docker-php-ext-enable opentelemetry \
     && rm -rf /tmp/pear /tmp/download
+
+USER www-data
