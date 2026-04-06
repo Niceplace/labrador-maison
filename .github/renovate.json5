@@ -23,9 +23,8 @@
   "prConcurrentLimit": 0,
   "branchConcurrentLimit": 0,
 
-  // Enable digest pinning for Docker images with explicit file matching
+  // Enable digest pinning for Docker images
   "docker-compose": {
-    "fileMatch": ["**/docker-compose.yml", "**/docker-compose.yaml"],
     "pinDigests": true
   },
 
