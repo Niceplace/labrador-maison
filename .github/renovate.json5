@@ -30,7 +30,6 @@
 
   // Enable digest pinning for Docker images with explicit file matching
   "docker-compose": {
-    "fileMatch": ["**/docker-compose.{yml,yaml}"],
     "pinDigests": true
   },
 
