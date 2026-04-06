@@ -58,7 +58,7 @@ services:
       KOMODO_LOGGING_OPENTELEMETRY_SERVICE_NAME: ${KOMODO_LOGGING_OPENTELEMETRY_SERVICE_NAME}
       TZ: ${TZ}
     volumes:
-      - komodo-core-keys:/config/keys
+      - keys/config/keys
       - ${COMPOSE_KOMODO_BACKUPS_PATH}:/backups
     networks:
       - thinknetwork
@@ -83,7 +83,7 @@ services:
       PERIPHERY_CONNECT_AS: ${PERIPHERY_CONNECT_AS}
       PERIPHERY_ONBOARDING_KEY: ${PERIPHERY_ONBOARDING_KEY}
     volumes:
-      - komodo-periphery-keys:/config/keys
+      - keys:/config/keys
       - /var/run/docker.sock:/var/run/docker.sock
       - /proc:/proc
       - ${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}:${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}
@@ -93,8 +93,7 @@ services:
 volumes:
   mongo-data:
   mongo-config:
-  komodo-core-keys:
-  komodo-periphery-keys:
+  keys:
 
 networks:
   thinknetwork:
