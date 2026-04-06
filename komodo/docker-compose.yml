@@ -57,7 +57,7 @@ services:
       KOMODO_LOGGING_OPENTELEMETRY_SERVICE_NAME: ${KOMODO_LOGGING_OPENTELEMETRY_SERVICE_NAME}
       TZ: ${TZ}
     volumes:
-      - keys/config/keys
+      - keys:/config/keys
       - ${COMPOSE_KOMODO_BACKUPS_PATH}:/backups
     networks:
       - thinknetwork
