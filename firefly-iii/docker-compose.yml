@@ -25,7 +25,6 @@ services:
       - traefik.http.routers.firefly.entrypoints=websecure
       - traefik.http.services.firefly.loadbalancer.server.port=8080
       - alloy.service.name=firefly-iii-app
-
   db:
     image: postgres@sha256:727387873f1054a0a2761c1816deb4d6a0f7b597c1df4937d0a11af9274da7d2
     container_name: firefly-iii-db
@@ -33,7 +32,7 @@ services:
     volumes:
       - type: volume
         source: firefly_iii_db_data
-        target: /var/lib/postgresql/data
+        target: /var/lib/postgresql
     env_file:
       - path: .db.env
         required: true
