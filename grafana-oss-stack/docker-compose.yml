@@ -85,7 +85,7 @@ services:
   tempo:
     depends_on:
       - redpanda
-    image: grafana/tempo@sha256:f4c946a40d349e2436469560bd0f194b43dd4000a98933aa899c32d85409855c
+    image: grafana/tempo@sha256:b2e54907505f97725d39d585d70f2bec2eae1da54b0699afc79d89fce496eed8
     container_name: tempo
     restart: unless-stopped
     command: "-config.file=/etc/tempo/config.yaml"
