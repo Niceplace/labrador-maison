@@ -103,7 +103,7 @@ services:
     networks:
       - thinknetwork
   alloy:
-    image: grafana/alloy@sha256:579582bce40049f2e27bd1e445000689c907a41f0495cb0d0c7f65609316ba7c
+    image: grafana/alloy@sha256:6e00cf7c5a692ff5f24844529416ed017d76fce922f8199004e73d5eca46b6b8
     container_name: alloy
     restart: unless-stopped
     command: run /etc/alloy/config.alloy
