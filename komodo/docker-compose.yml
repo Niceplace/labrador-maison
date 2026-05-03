@@ -63,7 +63,7 @@ services:
       - thinknetwork
 
   periphery:
-    image: ghcr.io/moghtech/komodo-periphery@sha256:9324baa15d355796fc8ab7fb4a4de7f2904327238100fa78fc2c814ba9d56022
+    image: ghcr.io/moghtech/komodo-periphery@sha256:bd79cf960ed054fe8e02384322303e462448679b1149dde48bbef151417255b1
     init: true
     labels:
       komodo.skip:
