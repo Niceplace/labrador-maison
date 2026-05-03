@@ -3,7 +3,7 @@
 ################################
 services:
   mongo:
-    image: mongo@sha256:5483a68b6fe7737367be84fb963f0e440e67a87f2e57ea087e608da034e91318
+    image: mongo@sha256:9b18c8c1470a5aebb150ce87d6386f78f29ce74b96dfe55524161065eb8d71db
     labels:
       komodo.skip:
     command: --quiet --wiredTigerCacheSizeGB 0.25
@@ -18,7 +18,7 @@ services:
       - thinknetwork
 
   core:
-    image: ghcr.io/moghtech/komodo-core@sha256:2bbbb1efd3534211dac35091e0818f10398d9bdd98fdbf0ddef09e9e0b5ec4ba
+    image: ghcr.io/moghtech/komodo-core@sha256:a1cceb4f971443b1e9f2a767788f663d0afb6244ee2135f7fe3fd1036af37ade
     init: true
     labels:
       komodo.skip:
@@ -63,7 +63,7 @@ services:
       - thinknetwork
 
   periphery:
-    image: ghcr.io/moghtech/komodo-periphery@sha256:9324baa15d355796fc8ab7fb4a4de7f2904327238100fa78fc2c814ba9d56022
+    image: ghcr.io/moghtech/komodo-periphery@sha256:bd79cf960ed054fe8e02384322303e462448679b1149dde48bbef151417255b1
     init: true
     labels:
       komodo.skip:
