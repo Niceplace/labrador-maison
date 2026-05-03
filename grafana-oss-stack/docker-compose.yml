@@ -25,7 +25,7 @@ services:
     networks:
       - thinknetwork
   prometheus:
-    image: prom/prometheus@sha256:dda13e28bf95a5e5ca5b8ed56852006094c1c8e8871d9c9dbeed30aa6e55271f
+    image: prom/prometheus@sha256:e4254400b85610324913f0dc4acf92603d9984e7519414c5a12811aa6146acc3
     container_name: prometheus
     restart: unless-stopped
     command:
