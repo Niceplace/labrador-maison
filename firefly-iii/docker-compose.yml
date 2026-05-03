@@ -26,7 +26,7 @@ services:
       - traefik.http.services.firefly.loadbalancer.server.port=8080
       - alloy.service.name=firefly-iii-app
   db:
-    image: postgres@sha256:727387873f1054a0a2761c1816deb4d6a0f7b597c1df4937d0a11af9274da7d2
+    image: postgres@sha256:692e5dca0962d91131c4ad681f50fb2b79dffb3ef8d766aef2c8cf671fea4034
     container_name: firefly-iii-db
     restart: unless-stopped
     volumes:
