@@ -18,7 +18,7 @@ services:
       - thinknetwork
 
   core:
-    image: ghcr.io/moghtech/komodo-core@sha256:2bbbb1efd3534211dac35091e0818f10398d9bdd98fdbf0ddef09e9e0b5ec4ba
+    image: ghcr.io/moghtech/komodo-core@sha256:a1cceb4f971443b1e9f2a767788f663d0afb6244ee2135f7fe3fd1036af37ade
     init: true
     labels:
       komodo.skip:
