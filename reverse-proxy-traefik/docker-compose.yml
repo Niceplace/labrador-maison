@@ -1,7 +1,7 @@
 services:
   reverse-proxy:
     # The official v2 Traefik docker image
-    image: traefik@sha256:8cb20d16e01a53d8d7f7696ac2f1af7d200d5c9984d226ce2299731d9eab6d6c
+    image: traefik@sha256:eef8fe1a1eb105b73b1c16b7d43b463e0383e918327e15619dfd54167085ffb3
     restart: unless-stopped
     command:
       - --accesslog.fields.names.StartUTC=drop
